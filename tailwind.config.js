@@ -1,7 +1,12 @@
-/** @type {import('tailwindcss').Config} */
+// tailwind.config.js
 module.exports = {
-  content: ['./pages/**/*.{js,jsx}', './components/**/*.{js,jsx}'],
-  theme: { extend: {} },
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: 'media', // Uses system preference (light/dark)
+  theme: {
+    extend: {},
+  },
   plugins: [],
 };
-
