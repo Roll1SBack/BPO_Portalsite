@@ -1,7 +1,9 @@
 import { useRouter } from "next/router";
 import Image from "next/image";
 import Link from "next/link";
+import Layout from "../../components/Layout";
 
+// Debug: Service LP content only (no header/footer).
 const serviceData = {
   "ec-fulfillment": {
     title: "EC・フルフィルメント",
@@ -48,60 +50,43 @@ export default function ServicePage() {
   if (!data.title) return <p className="text-center py-20 text-gray-900 dark:text-gray-100">サービスが見つかりません</p>;
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-      <header className="bg-white shadow py-4 px-8 dark:bg-gray-800 dark:shadow-gray-700">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
-          <Link href="/" className="flex items-center">
-            <Image src="/logo.svg" alt="日向BPOセンターの公式ロゴ" width={50} height={50} />
-            <h1 className="text-2xl font-bold ml-3">日向BPOセンター</h1>
-          </Link>
-        </div>
-      </header>
-
-      <main className="py-12 px-8 max-w-4xl mx-auto">
-        <h2 className="text-4xl font-bold mb-6 text-center">{data.title}</h2>
-        <p className="text-xl text-center mb-8">{data.slogan}</p>
-        <div className="relative w-full" style={{ aspectRatio: "16/9" }}>
+      <main>
+        <section className="py-12 px-8 max-w-4xl mx-auto">
+          <h2 className="text-4xl font-bold mb-6 text-center">{data.title}</h2>
+          <p className="text-xl text-center mb-8">{data.slogan}</p>
           <Image
             src={data.img}
             alt={`${data.title}のイメージ`}
-            layout="fill"
-            objectFit="cover"
-            className="rounded mb-8"
+            width={800}
+            height={450}
+            className="w-full h-auto rounded mb-8"
           />
-        </div>
-        <section>
-          <h3 className="text-2xl font-semibold mb-4">当社の強み</h3>
-          <ul className="list-disc pl-6">
-            {data.strengths?.map((strength) => (
-              <li key={strength} className="mb-2">{strength}</li>
-            ))}
-          </ul>
+          <section>
+            <h3 className="text-2xl font-semibold mb-4">当社の強み</h3>
+            <ul className="list-disc pl-6">
+              {data.strengths?.map((strength) => (
+                <li key={strength} className="mb-2">{strength}</li>
+              ))}
+            </ul>
+          </section>
+          <section className="mt-8">
+            <h3 className="text-2xl font-semibold mb-4">作業の流れ</h3>
+            <ol className="list-decimal pl-6">
+              {data.process?.map((step) => (
+                <li key={step} className="mb-2">{step}</li>
+              ))}
+            </ol>
+          </section>
+          <div className="flex gap-6 mt-12 justify-center">
+            <Link href="/quote" className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800">
+              無料見積もり
+            </Link>
+            <Link href="/contact" className="px-6 py-3 bg-gray-600 text-white rounded hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-800">
+              お問い合わせ
+            </Link>
+          </div>
         </section>
-        <section className="mt-8">
-          <h3 className="text-2xl font-semibold mb-4">作業の流れ</h3>
-          <ol className="list-decimal pl-6">
-            {data.process?.map((step) => (
-              <li key={step} className="mb-2">{step}</li>
-            ))}
-          </ol>
-        </section>
-        <div className="flex gap-6 mt-12 justify-center">
-          <Link href="/quote" className="px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800">
-            無料見積もり
-          </Link>
-          <Link href="/contact" className="px-6 py-3 bg-gray-600 text-white rounded hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-800">
-            お問い合わせ
-          </Link>
-        </div>
       </main>
-
-      <footer className="bg-white shadow py-6 px-8 mt-auto dark:bg-gray-800 dark:shadow-gray-700">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-sm">© {new Date().getFullYear()} 日向BPOセンター. All Rights Reserved.</p>
-        </div>
-      </footer>
-    </div>
   );
 }
 
