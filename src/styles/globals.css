@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+html, body {
+  height: 100%;
   margin: 0;
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -10,8 +11,5 @@ body {
 /* Add this CSS to your global stylesheet or within a <style jsx> block */
 .relative.group:hover .absolute {
   display: block;
-}
-
-.relative.group:hover .absolute {
   pointer-events: auto;
 }
