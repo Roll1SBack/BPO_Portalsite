@@ -62,12 +62,19 @@ export default function Layout({ children, extraContact = null }) {
     <div className="flex flex-col min-h-screen bg-gray-100 text-gray-900">
       <header className="bg-white shadow py-4 px-8">
         <div className="flex flex-col items-start justify-between max-w-7xl mx-auto">
-          <div className="flex items-center mb-4"> {/* Logo and title line */}
-            <Image src="/logo.jpg" alt="ダイオーミウラBPOビジネスセンターの公式ロゴ" width={150} height={150} /> {/* Maintained size */}
-            <div className="flex items-center space-x-2">
-              {/* <h1 className="text-2xl font-bold text-gray-900">ダイオーミウラ株式会社</h1> */}
-              <span className="text-2xl font-bold text-blue-600">BPOビジネスセンター</span>
+          <div className="mb-4 flex items-center justify-between w-full">
+            <div className="w-[200px]"> {/* Fixed width container for logo */}
+              <Image 
+                src="/logo.jpg" 
+                alt="ダイオーミウラBPOビジネスセンターの公式ロゴ" 
+                width={200} 
+                height={200} 
+              />
             </div>
+            <h1 className="text-3xl font-extrabold tracking-wide text-gray-800 ml-4 animate-pulse text-yellow-300 hover:text-yellow-400 transition-colors duration-500 flex-1 text-center">
+              BPOビジネスセンター
+            </h1>
+            <div className="w-[200px]"></div> {/* Spacer div to balance the logo */}
           </div>
           <div className="flex items-end justify-between w-full"> {/* Menu and buttons on same line */}
             <nav role="navigation">

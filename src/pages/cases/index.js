@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-// Debug: Case Studies list page in light mode only, in /pages/cases/cases.js, with circling circular layout, hover effects, and navigation, footer at bottom via Layout.js.
+// Debug: Case Studies list page in light mode only, in /pages/cases/index.js, with circling circular layout, hover effects, and navigation, footer at bottom via Layout.js.
 export default function Cases() {
   // Case study data, using paths from Layout.js dropdown (成功事例)
   const caseStudies = [
