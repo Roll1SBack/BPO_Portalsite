@@ -8,9 +8,9 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>日向BPOセンター</title>
+        <title>ダイオーミウラBPO</title>
         <meta name="description" content="あなたのビジネスを加速するBPOソリューション" />
-        <meta property="og:title" content="日向BPOセンター" />
+        <meta property="og:title" content="ダイオーミウラBPO" />
         <meta property="og:description" content="あなたのビジネスを加速するBPOソリューション" />
         <meta property="og:image" content="/office.png" />
         <meta property="og:url" content="https://yourwebsite.com" />
@@ -20,7 +20,7 @@ export default function Home() {
           <section className="relative bg-blue-600 text-white py-20 text-center dark:bg-blue-900 z-0">
             <Image
               src="/office.png"
-              alt="日向BPOセンターのオフィス"
+              alt="ダイオーミウラBPOのオフィス"
               width={1024}
               height={576}
               className="absolute inset-0 w-full h-full object-cover opacity-20 z-[-1]"
