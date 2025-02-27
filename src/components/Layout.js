@@ -4,46 +4,37 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion"; // Import Framer Motion
 import { slide as Menu } from "react-burger-menu"; // Import React Burger Menu for mobile
+import { FaCalculator, FaEnvelope } from "react-icons/fa"; // Import SVG icons from react-icons
 
-// Debug: Site-wide Layout in light mode only, with dropdowns closing on menu clicks, clickable サービス一覧 and 成功事例.
+// Debug: Site-wide Layout in light mode only, with static ribbon, circular scrolling text (8 cm text in 10 cm ribbon), dropdowns closing on menu clicks, clickable サービス一覧 and 成功事例, and SVG icons for buttons.
 export default function Layout({ children, extraContact = null }) {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [caseDropdownOpen, setCaseDropdownOpen] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false); // For mobile menu
+  const [dropdownOpen, setDropdownOpen] = useState({ services: false, cases: false }); // Use object for multiple dropdowns
   const timeoutRef = useRef(null);
   const caseTimeoutRef = useRef(null);
   const router = useRouter();
 
   const [isClient, setIsClient] = useState(false);
-  // Set isClient to true on client-side mmount
+  // Set isClient to true on client-side mount
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const handleMouseEnter = () => {
+  const handleMouseEnter = (type) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setDropdownOpen(true);
-  };
-
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => setDropdownOpen(false), 50);
-  };
-
-  const handleCaseMouseEnter = () => {
     if (caseTimeoutRef.current) clearTimeout(caseTimeoutRef.current);
-    setCaseDropdownOpen(true);
+    setDropdownOpen((prev) => ({ ...prev, [type]: true }));
   };
 
-  const handleCaseMouseLeave = () => {
-    caseTimeoutRef.current = setTimeout(() => setCaseDropdownOpen(false), 50);
+  const handleMouseLeave = (type) => {
+    const timeout = setTimeout(() => {
+      setDropdownOpen((prev) => ({ ...prev, [type]: false }));
+    }, 50);
+    if (type === "services") timeoutRef.current = timeout;
+    else caseTimeoutRef.current = timeout;
   };
 
-  const handleDropdownClick = () => {
-    setDropdownOpen(false);
-  };
-
-  const handleCaseDropdownClick = () => {
-    setCaseDropdownOpen(false);
+  const handleDropdownClick = (type) => {
+    setDropdownOpen((prev) => ({ ...prev, [type]: false }));
   };
 
   const isActive = (href) =>
@@ -60,11 +51,7 @@ export default function Layout({ children, extraContact = null }) {
 
   // Close dropdowns and mobile menu when navigating to list pages
   const handleMenuClick = (path, isService) => {
-    if (isService) {
-      setDropdownOpen(false);
-    } else {
-      setCaseDropdownOpen(false);
-    }
+    setDropdownOpen({ services: false, cases: false }); // Close all dropdowns
     setIsMenuOpen(false); // Close mobile menu
     router.push(path);
   };
@@ -111,6 +98,31 @@ export default function Layout({ children, extraContact = null }) {
       left: "0",
     },
   };
+
+  function Ribbon() {
+    const router = useRouter();
+    const isTopPage = router.pathname === "/";
+
+    // Only render on client-side to prevent SSR issues
+    if (!isClient) return null;
+
+    return (
+      <div className="relative w-full h-9 bg-red-600 overflow-hidden">
+        {/* Static ribbon background */}
+        <div className="flex inset-0 bg-red-600 flex items-center justify-center">
+          { (
+            <div className="absolute inset-y-0 flex items-center">
+              <p className="ribbon-text text-white text-lg font-semibold italic tracking-wide">
+                極限の効率と価値創造、ビジネスに革新を。
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Moved here to avoid re-rendering issues
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 text-gray-900">
@@ -243,15 +255,9 @@ export default function Layout({ children, extraContact = null }) {
             </div>
           </div>
 
-          {/* Curved Paper Ribbon with Slogan (Updated with tailwind-clip-path) */}
-          <div className="relative w-full">
-            <div className="absolute top-0 left-0 right-80 h-11 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 rounded-full flex items-center justify-center overflow-hidden z-10 clip-path-ribbon-left clip-path-ribbon-right">
-              <p className="text-base font-medium text-orange-700 z-50">効率化と革新を支える</p>
-            </div>
-          </div>
-
           <div className="flex items-end justify-between w-full"> {/* Menu and buttons on same line */}
             <nav role="navigation" className="hidden md:block">
+              {isClient && <Ribbon />} {/* Render Ribbon only on client-side to prevent SSR issues */}
               <ul className="flex gap-4 items-end flex-nowrap"> {/* Prevent wrapping, reduced gap for more space */}
                 {/* Main menu items */}
                 <li>
@@ -267,7 +273,7 @@ export default function Layout({ children, extraContact = null }) {
                     </Link>
                   </motion.div>
                 </li>
-                <li className="relative group" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                <li className="relative group" onMouseEnter={() => handleMouseEnter("services")} onMouseLeave={() => handleMouseLeave("services")}>
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300 }}
@@ -286,9 +292,9 @@ export default function Layout({ children, extraContact = null }) {
                   {/* Restored Dropdown Menu with Animation */}
                   <motion.ul
                     initial={{ opacity: 0, y: -10 }}
-                    animate={dropdownOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+                    animate={dropdownOpen.services ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute hidden group-hover:block w-50 bg-white shadow-lg p-3 rounded-lg z-50 transition-opacity duration-100 ${dropdownOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+                    className={`absolute hidden group-hover:block w-50 bg-white shadow-lg p-3 rounded-lg z-50 transition-opacity duration-100 ${dropdownOpen.services ? "opacity-100 visible" : "opacity-0 invisible"}`}
                   >
                     {[
                       { name: "事業内容TOP", href: "/services" },
@@ -302,7 +308,7 @@ export default function Layout({ children, extraContact = null }) {
                         <Link
                           href={service.href}
                           className="block px-1 py-2 hover:bg-gray-100 text-base font-medium text-gray-800 hover:text-blue-600 whitespace-nowrap"
-                          onClick={handleDropdownClick}
+                          onClick={() => handleDropdownClick("services")}
                         >
                           {service.name}
                         </Link>
@@ -310,7 +316,7 @@ export default function Layout({ children, extraContact = null }) {
                     ))}
                   </motion.ul>
                 </li>
-                <li className="relative group" onMouseEnter={handleCaseMouseEnter} onMouseLeave={handleCaseMouseLeave}>
+                <li className="relative group" onMouseEnter={() => handleMouseEnter("cases")} onMouseLeave={() => handleMouseLeave("cases")}>
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: "spring", stiffness: 300 }}
@@ -329,9 +335,9 @@ export default function Layout({ children, extraContact = null }) {
                   {/* Restored Dropdown Menu for 成功事例 with Animation */}
                   <motion.ul
                     initial={{ opacity: 0, y: -10 }}
-                    animate={caseDropdownOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+                    animate={dropdownOpen.cases ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute hidden group-hover:block w-50 bg-white shadow-lg p-3 rounded-lg z-50 transition-opacity duration-100 ${caseDropdownOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+                    className={`absolute hidden group-hover:block w-50 bg-white shadow-lg p-3 rounded-lg z-50 transition-opacity duration-100 ${dropdownOpen.cases ? "opacity-100 visible" : "opacity-0 invisible"}`}
                   >
                     {[
                       { name: "成功事例TOP", href: "/cases" },
@@ -345,7 +351,7 @@ export default function Layout({ children, extraContact = null }) {
                         <Link
                           href={caseStudy.href}
                           className="block px-1 py-2 hover:bg-gray-100 text-base font-medium text-gray-800 hover:text-blue-600 whitespace-nowrap"
-                          onClick={handleCaseDropdownClick}
+                          onClick={() => handleDropdownClick("cases")}
                         >
                           {caseStudy.name}
                         </Link>
@@ -401,14 +407,15 @@ export default function Layout({ children, extraContact = null }) {
                 <span className="text-2xl font-bold">0123-456-789</span>
                 <span className="text-sm">受付時間：平日9:00〜18:00</span>
               </div>
-              {/* Buttons on same line as menu, enhanced styling */}
-              <div className="flex items-end gap-4 mb-2"> {/* Buttons on same line as menu, enhanced styling */}
+              {/* Buttons on same line as menu, enhanced styling with SVG icons */}
+              <div className="flex items-end gap-4 mb-2">
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 300 }}>
                   <Link
                     href="/quote"
                     className="w-22 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 shadow-md flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-300"
                   >
-                    <span>🧮</span> 無料見積もり
+                    <FaCalculator className="text-white text-xl" /> {/* SVG calculator icon */}
+                    無料見積もり
                   </Link>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 300 }}>
@@ -416,7 +423,8 @@ export default function Layout({ children, extraContact = null }) {
                     href="/contact"
                     className="w-22 px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-800 shadow-md flex items-center justify-center gap-2 whitespace-nowrap overflow-hidden text-ellipsis transition-all duration-300"
                   >
-                    <span>📧</span> お問い合わせ
+                    <FaEnvelope className="text-white text-xl" /> {/* SVG envelope icon */}
+                    お問い合わせ
                   </Link>
                 </motion.div>
               </div>

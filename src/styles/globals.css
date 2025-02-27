@@ -13,3 +13,17 @@ html, body {
   display: block;
   pointer-events: auto;
 }
+
+@keyframes wave {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.clip-path-wave {
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+  animation: wave 10s linear infinite;
+}

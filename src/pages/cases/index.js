@@ -1,53 +1,153 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa"; // Using react-icons for navigation icons
 
-// Debug: Case Studies list page in light mode only, in /pages/cases/index.js, with circling circular layout, hover effects, and navigation, footer at bottom via Layout.js.
+// Debug: Case Studies list page in light mode only, in /pages/cases/index.js, with taller, elegant sliding carousel, beautiful icon navigation, aligned IDs, new content, animations, and hover effects, fixed Link error.
 export default function Cases() {
-  // Case study data, using paths from Layout.js dropdown (成功事例)
+  // Case study data aligned with getStaticPaths IDs
   const caseStudies = [
-    { id: "ec-efficiency", title: "EC事業の効率化", service: "EC・フルフィルメント", href: "/cases/ec-efficiency", description: "作業効率50%向上、コスト20%削減。" },
-    { id: "manufacturing-optimization", title: "製造プロセスの最適化", service: "アセンブリ・セット作業", href: "/cases/manufacturing-optimization", description: "生産性30%向上、納期短縮10%。" },
-    { id: "office-automation", title: "事務作業の自動化", service: "事務局代行", href: "/cases/office-automation", description: "作業時間70%削減、エラー率0.1%。" },
-    { id: "inventory-improvement", title: "在庫管理の改善", service: "在庫管理・受発注業務", href: "/cases/inventory-improvement", description: "在庫精度95%、コスト15%削減。" },
-    { id: "data-processing-speedup", title: "データ処理の高速化", service: "データ処理・オーバープリント", href: "/cases/data-processing-speedup", description: "処理速度3倍、正確性98%。" },
+    { 
+      id: "ec-efficiency", 
+      title: "EC事業の効率化", 
+      service: "EC・フルフィルメント", 
+      href: "/cases/ec-efficiency", 
+      description: "オンライン注文処理を50%高速化し、顧客満足度を向上。" 
+    },
+    { 
+      id: "manufacturing-optimization", 
+      title: "製造プロセスの最適化", 
+      service: "アセンブリ・セット作業", 
+      href: "/cases/manufacturing-optimization", 
+      description: "生産ラインの効率を30%改善し、納期を10%短縮。" 
+    },
+    { 
+      id: "office-automation", 
+      title: "事務作業の自動化", 
+      service: "事務局代行", 
+      href: "/cases/office-automation", 
+      description: "事務作業時間を70%削減し、エラー率を0.1%未満に抑制。" 
+    },
+    { 
+      id: "inventory-improvement", 
+      title: "在庫管理の改善", 
+      service: "在庫管理・受発注業務", 
+      href: "/cases/inventory-improvement", 
+      description: "在庫精度を95%に向上させ、運用コストを15%削減。" 
+    },
+    { 
+      id: "data-processing-speedup", 
+      title: "データ処理の高速化", 
+      service: "データ処理・オーバープリント", 
+      href: "/cases/data-processing-speedup", 
+      description: "データ処理速度を3倍に加速し、正確性98%を達成。" 
+    },
   ];
 
-  const [rotation, setRotation] = useState(0); // Current rotation angle in degrees
-  const [hoveredCase, setHoveredCase] = useState(null); // Track hovered case for stopping rotation and showing content
+  const [currentIndex, setCurrentIndex] = useState(0); // Track current carousel position
+  const [hoveredCase, setHoveredCase] = useState(null); // Track hovered case for showing content
+  const [filter, setFilter] = useState(""); // State for filter
 
-  // Handle continuous rotation with debug logging
+  // Filter case studies based on service
+  const filteredCases = filter
+    ? caseStudies.filter((caseStudy) => caseStudy.service === filter)
+    : caseStudies;
+
+  // Animation variants for the section entrance
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      transition: { 
+        duration: 0.8, 
+        staggerChildren: 0.1, // Stagger children for a cascading effect
+      },
+    },
+  };
+
+  // Animation variants for case study cards (carousel items)
+  const cardVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: { 
+      opacity: 1, 
+      x: 0, 
+      transition: { 
+        type: "spring", 
+        stiffness: 100, 
+        damping: 15, 
+        duration: 0.6,
+      },
+    },
+    exit: { opacity: 0, x: -50, transition: { duration: 0.5 } },
+  };
+
+  // Animation variants for hover description
+  const descriptionVariants = {
+    hidden: { opacity: 0, y: -10, scale: 0.95 },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      scale: 1, 
+      transition: { 
+        type: "spring", 
+        stiffness: 150, 
+        damping: 10, 
+        duration: 0.4,
+      },
+    },
+    exit: { opacity: 0, y: -10, scale: 0.95, transition: { duration: 0.3 } },
+  };
+
+  // Animation variants for filter dropdown
+  const filterVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
+  // Animation variants for navigation buttons
+  const buttonVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: { 
+      opacity: 1, 
+      scale: 1, 
+      transition: { 
+        duration: 0.5, 
+        ease: "easeOut",
+      },
+    },
+    hover: { 
+      scale: 1.1, 
+      boxShadow: "0 5px 15px rgba(0, 0, 0, 0.1)", 
+      transition: { 
+        duration: 0.3, 
+        ease: "easeInOut",
+      },
+    },
+  };
+
+  // Handle navigation
+  const handlePrev = () => {
+    setCurrentIndex((prev) => (prev - 1 + filteredCases.length) % filteredCases.length);
+  };
+
+  const handleNext = () => {
+    setCurrentIndex((prev) => (prev + 1) % filteredCases.length);
+  };
+
+  // Auto-slide logic
   useEffect(() => {
-    let animationFrameId;
-    console.log("Starting rotation animation...");
-    const rotate = () => {
-      if (!hoveredCase) {
-        setRotation((prev) => {
-          const newRotation = (prev + 1) % 360;
-          console.log(`Rotating to: ${newRotation} degrees`);
-          return newRotation;
-        });
-      }
-      animationFrameId = requestAnimationFrame(rotate);
-    };
-    animationFrameId = requestAnimationFrame(rotate);
-
-    return () => {
-      console.log("Cleaning up rotation animation...");
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [hoveredCase]);
-
-  // Calculate position for each case in a circle (5 cases, evenly spaced)
-  const radius = 150; // Radius of the circle in pixels
-  const containerSize = 500; // Size of the container in pixels
-  const centerX = containerSize / 2; // Center X of the circle
-  const centerY = containerSize / 2; // Center Y of the circle
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % filteredCases.length);
+    }, 5000); // Slide every 5 seconds
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [filteredCases.length]);
 
   return (
     <>
       <Head>
-        <title>成功事例 - ダイオーミウラBPOビジネスセンター</title> {/* Updated brand name */}
+        <title>成功事例 - ダイオーミウラBPOビジネスセンター</title>
         <meta
           name="description"
           content="ダイオーミウラBPOビジネスセンターの成功事例をご覧ください。業務効率化とコスト削減の実績をご確認いただけます。"
@@ -60,84 +160,134 @@ export default function Cases() {
         <meta property="og:image" content="/office.png" />
         <meta property="og:url" content="https://yourwebsite.com/cases" />
       </Head>
-      <main className="flex-grow"> {/* Ensure content fills viewport for footer via Layout.js */}
-        <section className="py-12 px-8 max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold mb-6 text-center">成功事例</h1>
-          <p className="text-lg mb-8 text-center">
+      <main className="flex-grow">
+        <motion.section
+          className="py-12 px-8 max-w-6xl mx-auto" // Maintained max-width, increased padding for taller slides
+          initial="hidden"
+          animate="visible"
+          variants={sectionVariants}
+        >
+          <motion.h1
+            className="text-4xl font-bold mb-10 text-center" // Increased margin for taller layout
+            variants={cardVariants}
+          >
+            成功事例
+          </motion.h1>
+          <motion.p
+            className="text-lg mb-12 text-center" // Increased margin for taller layout
+            variants={cardVariants}
+          >
             ダイオーミウラBPOビジネスセンターがお客様の業務効率化とコスト削減をどのようにサポートしたかをご覧ください。
-          </p>
-          <div className="relative w-[500px] h-[500px] mx-auto overflow-hidden"> {/* Container for the circle, with overflow hidden */}
-            <div
-              className="absolute w-full h-full origin-center"
-              style={{
-                transform: `rotate(${rotation}deg)`,
-                transition: hoveredCase ? "transform 0.3s ease-out" : "transform 20s linear", // Slow rotation, stop on hover
+          </motion.p>
+          <div className="relative overflow-hidden">
+            <motion.div
+              className="flex"
+              animate={{
+                x: `-${currentIndex * 100}%`, // Slide horizontally based on current index
+              }}
+              transition={{
+                type: "tween",
+                duration: 0.8,
+                ease: "easeInOut",
               }}
             >
-              {caseStudies.map((caseStudy, index) => {
-                const angle = (360 / caseStudies.length) * index; // Evenly space cases around the circle
-                const rad = (angle + rotation) * (Math.PI / 180); // Convert to radians for positioning
-                const defaultSize = 60; // Default size in pixels (w-24 = 96px, but adjust for smaller circle)
-                const hoverSize = 90; // Enlarged size on hover (scale-150 of default, approximately 144px)
-                const x = centerX + radius * Math.cos(rad) - (hoveredCase === caseStudy.id ? hoverSize / 2 : defaultSize / 2);
-                const y = centerY + radius * Math.sin(rad) - (hoveredCase === caseStudy.id ? hoverSize / 2 : defaultSize / 2);
-
-                return (
-                  <Link
-                    key={caseStudy.id}
-                    href={caseStudy.href}
-                    className={`absolute text-center cursor-pointer bg-white rounded-full shadow-md p-2 border border-gray-300 hover:bg-gray-100 transition-all duration-300 ${
-                      hoveredCase === caseStudy.id
-                        ? "scale-150 z-10 bg-blue-100 border-blue-500" // Enlarge and highlight on hover
-                        : ""
-                    }`}
-                    style={{
-                      width: hoveredCase === caseStudy.id ? `${hoverSize}px` : `${defaultSize}px`,
-                      height: hoveredCase === caseStudy.id ? `${hoverSize}px` : `${defaultSize}px`,
-                      left: `${x}px`,
-                      top: `${y}px`,
-                    }}
-                    onMouseEnter={() => {
-                      console.log(`Hovering over: ${caseStudy.title} at ${caseStudy.href}`);
-                      setHoveredCase(caseStudy.id);
-                    }}
-                    onMouseLeave={() => {
-                      console.log(`Leaving hover on: ${caseStudy.title}`);
-                      setHoveredCase(null);
-                    }}
-                  >
-                    <span className="block text-xs font-semibold text-gray-900 truncate">
-                      {caseStudy.title}
-                    </span>
-                    {hoveredCase === caseStudy.id && (
-                      <div className="absolute top-full mt-2 w-48 bg-white shadow-lg rounded p-2 text-sm text-gray-700 border border-gray-300">
-                        {caseStudy.service} - {caseStudy.description}
-                      </div>
-                    )}
+              {filteredCases.map((caseStudy) => (
+                <motion.div
+                  key={caseStudy.id}
+                  className="w-full flex-shrink-0 bg-white rounded-xl shadow-lg p-12 border border-gray-200 hover:shadow-2xl transition-shadow duration-300" // Increased padding (p-12) and height
+                  style={{ height: "600px" }} // Increased height for taller slides
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  whileHover={{ scale: 1.1, boxShadow: "0 15px 30px rgba(0, 0, 0, 0.15)" }} // Enhanced hover with larger scale and deeper shadow
+                  onMouseEnter={() => setHoveredCase(caseStudy.id)}
+                  onMouseLeave={() => setHoveredCase(null)}
+                >
+                  <Link href={caseStudy.href} legacyBehavior>
+                    <a className="block h-full flex flex-col justify-center">
+                      <h2 className="text-3xl font-bold text-gray-900 mb-8 hover:text-blue-600 transition-colors duration-300"> {/* Larger title, increased margin */}
+                        {caseStudy.title}
+                      </h2>
+                      <p className="text-xl text-gray-600 mb-10 hover:text-gray-800 transition-colors duration-300"> {/* Larger service text, increased margin */}
+                        {caseStudy.service}
+                      </p>
+                      <p className="text-lg text-gray-700 mb-10 line-clamp-4"> {/* Larger description, limited to 4 lines for taller layout, increased margin */}
+                        {caseStudy.description}
+                      </p>
+                      <AnimatePresence>
+                        {hoveredCase === caseStudy.id && (
+                          <motion.div
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            variants={descriptionVariants}
+                            className="absolute inset-0 bg-white bg-opacity-90 rounded-xl p-10 flex items-center justify-center text-xl text-gray-700 shadow-inner" // Larger description with increased padding
+                          >
+                            {caseStudy.description}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </a>
                   </Link>
-                );
-              })}
-            </div>
+                </motion.div>
+              ))}
+            </motion.div>
+            {/* Navigation Buttons with Icons */}
+            <motion.div
+              className="absolute top-1/2 left-0 right-0 flex justify-between px-6 transform -translate-y-1/2"
+              initial="hidden"
+              animate="visible"
+              variants={sectionVariants}
+            >
+              <motion.button
+                onClick={handlePrev}
+                className="bg-blue-600 text-white rounded-full p-6 shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" // Larger button with increased padding
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaArrowLeft className="text-3xl" /> {/* Larger icon */}
+              </motion.button>
+              <motion.button
+                onClick={handleNext}
+                className="bg-blue-600 text-white rounded-full p-6 shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50" // Larger button with increased padding
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap={{ scale: 0.95 }}
+              >
+                <FaArrowRight className="text-3xl" /> {/* Larger icon */}
+              </motion.button>
+            </motion.div>
           </div>
-          {/* Optional filter (placeholder, can be removed or styled differently) */}
-          <div className="mt-8 text-center">
-            <label htmlFor="filter" className="mr-2 text-sm font-medium text-gray-700">
+          {/* Animated filter dropdown */}
+          <motion.div
+            className="mt-12 text-center" // Increased margin for taller layout
+            initial="hidden"
+            animate="visible"
+            variants={filterVariants}
+          >
+            <label htmlFor="filter" className="mr-2 text-lg font-medium text-gray-700"> {/* Larger text */}
               サービスでフィルタ:
             </label>
-            <select
+            <motion.select
               id="filter"
-              className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              onChange={(e) => console.log("Filter applied:", e.target.value)}
+              className="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 px-6 py-4 text-xl transition-all duration-300 hover:bg-gray-50" // Larger select with increased padding and text size
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
             >
               <option value="">すべて</option>
-              <option value="ec-fulfillment">EC・フルフィルメント</option>
-              <option value="assembly">アセンブリ・セット作業</option>
-              <option value="secretariat">事務局代行</option>
-              <option value="inventory">在庫管理・受発注文業務</option>
-              <option value="data-processing">データ処理・オーバープリント</option>
-            </select>
-          </div>
-        </section>
+              <option value="EC・フルフィルメント">EC・フルフィルメント</option>
+              <option value="アセンブリ・セット作業">アセンブリ・セット作業</option>
+              <option value="事務局代行">事務局代行</option>
+              <option value="在庫管理・受発注業務">在庫管理・受発注業務</option>
+              <option value="データ処理・オーバープリント">データ処理・オーバープリント</option>
+            </motion.select>
+          </motion.div>
+        </motion.section>
       </main>
     </>
   );
