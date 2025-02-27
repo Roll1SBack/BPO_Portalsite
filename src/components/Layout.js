@@ -14,6 +14,12 @@ export default function Layout({ children, extraContact = null }) {
   const caseTimeoutRef = useRef(null);
   const router = useRouter();
 
+  const [isClient, setIsClient] = useState(false);
+  // Set isClient to true on client-side mmount
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const handleMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setDropdownOpen(true);
@@ -81,7 +87,7 @@ export default function Layout({ children, extraContact = null }) {
       background: "rgba(0, 0, 0, 0.9)",
     },
     bmMenu: {
-      background: "#fff",
+      background: "#ffe",
       padding: "2.5em 1.5em 0",
       fontSize: "1.00em",
     },
@@ -90,13 +96,19 @@ export default function Layout({ children, extraContact = null }) {
     },
     bmItemList: {
       color: "#b8b7ad",
-      padding: "0.8em",
+      padding: "0.1em",
+      flexDirection: "column",
+      display: "flex",
     },
     bmItem: {
       display: "inline-block",
     },
     bmOverlay: {
       background: "rgba(0, 0, 0, 0.3)",
+      width: "100%",
+      height: "100%",
+      top: "0",
+      left: "0",
     },
   };
 
@@ -109,19 +121,25 @@ export default function Layout({ children, extraContact = null }) {
           transition={{ duration: 0.6 }}
           className="flex flex-col items-start justify-between max-w-7xl mx-auto space-y-0"
         >
-          <div className="mb-0 flex items-center justify-between w-full">
-            <div className="w-[200px]"> {/* Fixed width container for logo */}
-              <Image
-                src="/logo.jpg"
-                alt="ダイオーミウラBPOビジネスセンターの公式ロゴ"
-                width={300}
-                height={300}
-              />
-            </div>
-            <h1 className="text-2xl font-extrabold tracking-wide text-gray-700 ml-4 text-gold-400 hover:text-gold-500 transition-colors duration-500 flex-1 text-center md:text-left">
-              BPOビジネスセンター
-            </h1>
-            <div className="w-[200px] flex justify-end">
+          <div className="mb-0 flex items-center justify-left w-full">
+            <Link href="https://www.dmps.co.jp/" target="_blank" rel="noopener noreferrer">
+              <div className="w-[300px]"> {/* Fixed width container for logo */}
+                <Image
+                  src="/logo.jpg"
+                  alt="ダイオーミウラBPOビジネスセンターの公式ロゴ"
+                  width={300}
+                  height={300}
+                />
+              </div>
+            </Link>
+
+            <Link href="/">
+              <h1 className="text-3xl font-extrabold tracking-wide ml-2 mt-1 text-black-600 hover:text-gold-900 transition-colors duration-500">
+                ｜BPOビジネスセンター
+              </h1>
+            </Link>
+
+            <div className="w-[300px] flex justify-end">
               {/* Mobile Menu Button */}
               <Menu
                 right
@@ -138,6 +156,8 @@ export default function Layout({ children, extraContact = null }) {
                 >
                   私たちについて
                 </Link>
+
+                {/* Main menu items */}
                 <Link
                   href="/services"
                   onClick={(e) => {
@@ -203,6 +223,7 @@ export default function Layout({ children, extraContact = null }) {
                 >
                   コラム
                 </Link>
+
                 <Link
                   href="/faq"
                   onClick={() => handleMenuClick("/faq", false)}
@@ -210,6 +231,7 @@ export default function Layout({ children, extraContact = null }) {
                 >
                   FAQ
                 </Link>
+
                 <Link
                   href="/documents"
                   onClick={() => handleMenuClick("/documents", false)}
@@ -220,9 +242,17 @@ export default function Layout({ children, extraContact = null }) {
               </Menu>
             </div>
           </div>
+
+          {/* Curved Paper Ribbon with Slogan (Updated with tailwind-clip-path) */}
+          <div className="relative w-full">
+            <div className="absolute top-0 left-0 right-80 h-11 bg-gradient-to-r from-gray-100 via-gray-200 to-gray-300 rounded-full flex items-center justify-center overflow-hidden z-10 clip-path-ribbon-left clip-path-ribbon-right">
+              <p className="text-base font-medium text-orange-700 z-50">効率化と革新を支える</p>
+            </div>
+          </div>
+
           <div className="flex items-end justify-between w-full"> {/* Menu and buttons on same line */}
             <nav role="navigation" className="hidden md:block">
-              <ul className="flex gap-6 items-end flex-nowrap"> {/* Prevent wrapping, reduced gap for more space */}
+              <ul className="flex gap-4 items-end flex-nowrap"> {/* Prevent wrapping, reduced gap for more space */}
                 {/* Main menu items */}
                 <li>
                   <motion.div
@@ -231,7 +261,7 @@ export default function Layout({ children, extraContact = null }) {
                   >
                     <Link
                       href="/"
-                      className={`hover:underline px-4 py-3 block text-lg font-medium whitespace-nowrap ${isActive("/") ? "underline text-blue-600" : "text-gray-900"}`}
+                      className={`hover:underline px-0 py-3 block text-lg font-semibold whitespace-nowrap ${isActive("/") ? "underline text-blue-600" : "text-gray-900"}`}
                     >
                       私たちについて
                     </Link>
@@ -248,7 +278,7 @@ export default function Layout({ children, extraContact = null }) {
                         e.preventDefault();
                         handleMenuClick("/services", true);
                       }}
-                      className={`hover:underline px-4 py-3 block text-lg font-medium cursor-pointer whitespace-nowrap ${isActive("/services") ? "underline text-blue-600" : "text-gray-900"}`}
+                      className={`hover:underline px-4 py-3 block text-lg font-semibold cursor-pointer whitespace-nowrap ${isActive("/services") ? "underline text-blue-600" : "text-gray-900"}`}
                     >
                       サービス一覧
                     </Link>
@@ -258,7 +288,7 @@ export default function Layout({ children, extraContact = null }) {
                     initial={{ opacity: 0, y: -10 }}
                     animate={dropdownOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute hidden group-hover:block w-72 bg-white shadow-lg p-4 rounded-lg z-50 transition-opacity duration-100 ${dropdownOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+                    className={`absolute hidden group-hover:block w-50 bg-white shadow-lg p-3 rounded-lg z-50 transition-opacity duration-100 ${dropdownOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
                   >
                     {[
                       { name: "事業内容TOP", href: "/services" },
@@ -271,7 +301,7 @@ export default function Layout({ children, extraContact = null }) {
                       <motion.li key={service.href} whileHover={{ scale: 1.05 }}>
                         <Link
                           href={service.href}
-                          className="block px-6 py-3 hover:bg-gray-100 text-lg font-medium text-gray-800 hover:text-blue-600 whitespace-nowrap"
+                          className="block px-1 py-2 hover:bg-gray-100 text-base font-medium text-gray-800 hover:text-blue-600 whitespace-nowrap"
                           onClick={handleDropdownClick}
                         >
                           {service.name}
@@ -291,7 +321,7 @@ export default function Layout({ children, extraContact = null }) {
                         e.preventDefault();
                         handleMenuClick("/cases", false);
                       }}
-                      className={`hover:underline px-4 py-3 block text-lg font-medium cursor-pointer whitespace-nowrap ${isActive("/cases") || router.pathname.startsWith("/cases/") ? "underline text-blue-600" : "text-gray-900"}`}
+                      className={`hover:underline px-4 py-3 block text-lg font-semibold cursor-pointer whitespace-nowrap ${isActive("/cases") || router.pathname.startsWith("/cases/") ? "underline text-blue-600" : "text-gray-900"}`}
                     >
                       成功事例
                     </Link>
@@ -301,7 +331,7 @@ export default function Layout({ children, extraContact = null }) {
                     initial={{ opacity: 0, y: -10 }}
                     animate={caseDropdownOpen ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
-                    className={`absolute hidden group-hover:block w-72 bg-white shadow-lg p-4 rounded-lg z-50 transition-opacity duration-100 ${caseDropdownOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
+                    className={`absolute hidden group-hover:block w-50 bg-white shadow-lg p-3 rounded-lg z-50 transition-opacity duration-100 ${caseDropdownOpen ? "opacity-100 visible" : "opacity-0 invisible"}`}
                   >
                     {[
                       { name: "成功事例TOP", href: "/cases" },
@@ -314,7 +344,7 @@ export default function Layout({ children, extraContact = null }) {
                       <motion.li key={caseStudy.href} whileHover={{ scale: 1.05 }}>
                         <Link
                           href={caseStudy.href}
-                          className="block px-6 py-3 hover:bg-gray-100 text-lg font-medium text-gray-800 hover:text-blue-600 whitespace-nowrap"
+                          className="block px-1 py-2 hover:bg-gray-100 text-base font-medium text-gray-800 hover:text-blue-600 whitespace-nowrap"
                           onClick={handleCaseDropdownClick}
                         >
                           {caseStudy.name}
@@ -330,7 +360,7 @@ export default function Layout({ children, extraContact = null }) {
                   >
                     <Link
                       href="/columns"
-                      className={`hover:underline px-4 py-3 block text-lg font-medium whitespace-nowrap ${isActive("/columns") || router.pathname.startsWith("/columns/") ? "underline text-blue-600" : "text-gray-900"}`}
+                      className={`hover:underline px-4 py-3 block text-lg font-semibold whitespace-nowrap ${isActive("/columns") || router.pathname.startsWith("/columns/") ? "underline text-blue-600" : "text-gray-900"}`}
                     >
                       コラム
                     </Link>
@@ -343,7 +373,7 @@ export default function Layout({ children, extraContact = null }) {
                   >
                     <Link
                       href="/faq"
-                      className={`hover:underline px-4 py-3 block text-lg font-medium whitespace-nowrap ${isActive("/faq") ? "underline text-blue-600" : "text-gray-900"}`}
+                      className={`hover:underline px-4 py-3 block text-lg font-semibold whitespace-nowrap ${isActive("/faq") ? "underline text-blue-600" : "text-gray-900"}`}
                     >
                       FAQ
                     </Link>
@@ -356,7 +386,7 @@ export default function Layout({ children, extraContact = null }) {
                   >
                     <Link
                       href="/documents"
-                      className={`hover:underline px-4 py-3 block text-lg font-medium whitespace-nowrap ${isActive("/documents") ? "underline text-blue-600" : "text-gray-900"}`}
+                      className={`hover:underline px-4 py-3 block text-lg font-semibold whitespace-nowrap ${isActive("/documents") ? "underline text-blue-600" : "text-gray-900"}`}
                     >
                       資料請求
                     </Link>
@@ -420,34 +450,34 @@ export default function Layout({ children, extraContact = null }) {
 
       {extraContact && extraContact}
 
-      <footer className="bg-white shadow-lg py-8 px-8 mt-auto">
+      <footer className="bg-blue-500 shadow-lg py-2 px-6 mt-auto">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
           className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center"
         >
-          <p className="text-base font-medium text-gray-700 mb-4 sm:mb-0">
+          <p className="text-sm font-medium text-gray-700 mb-4 sm:mb-0">
             © {new Date().getFullYear()} ダイオーミウラ株式会社. All Rights Reserved.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Link href="/environmental" className="text-base text-gray-600 hover:text-blue-600 hover:underline">
+              <Link href="/environmental" className="text-sm text-gray-700 hover:text-blue-600 hover:underline">
                 環境への取り組み
               </Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Link href="/sitemap" className="text-base text-gray-600 hover:text-blue-600 hover:underline">
+              <Link href="/sitemap" className="text-sm text-gray-700 hover:text-blue-600 hover:underline">
                 サイトマップ
               </Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Link href="/terms" className="text-base text-gray-600 hover:text-blue-600 hover:underline">
+              <Link href="/terms" className="text-sm text-gray-700 hover:text-blue-600 hover:underline">
                 サイトご利用上の注意
               </Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
-              <Link href="/privacy" className="text-base text-gray-600 hover:text-blue-600 hover:underline">
+              <Link href="/privacy" className="text-sm text-gray-700 hover:text-blue-600 hover:underline">
                 プライバシーポリシー
               </Link>
             </motion.div>
