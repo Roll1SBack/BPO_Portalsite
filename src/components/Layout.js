@@ -4,7 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { motion } from "framer-motion"; // Import Framer Motion
 import { slide as Menu } from "react-burger-menu"; // Import React Burger Menu for mobile
-import { FaCalculator, FaEnvelope } from "react-icons/fa"; // Import SVG icons from react-icons
+import { FaCalculator, FaEnvelope, FaPhone, FaAngleRight } from "react-icons/fa"; // Import SVG icons from react-icons
+import { IoIosArrowForward } from "react-icons/io"; // Import SVG icons from react-icons
+import { MdArrowRightAlt } from "react-icons/md"; // Import SVG icons from react-icons
 
 // Debug: Site-wide Layout in light mode only, with static ribbon, circular scrolling text (8 cm text in 10 cm ribbon), dropdowns closing on menu clicks, clickable サービス一覧 and 成功事例, and SVG icons for buttons.
 export default function Layout({ children, extraContact = null }) {
@@ -110,10 +112,13 @@ export default function Layout({ children, extraContact = null }) {
       <div className="relative w-full h-9 bg-red-600 overflow-hidden">
         {/* Static ribbon background */}
         <div className="flex inset-0 bg-red-600 flex items-center justify-center">
-          { (
+          {(
             <div className="absolute inset-y-0 flex items-center">
-              <p className="ribbon-text text-white text-lg font-semibold italic tracking-wide">
-                極限の効率と価値創造、ビジネスに革新を。
+              <p
+                className="ribbon-text text-white text-lg font-semibold italic tracking-wide"
+                style={{ letterSpacing: "0.3em" }}
+              >
+                DMPSよりの極限の効率と価値創造、ビジネスに革新を。
               </p>
             </div>
           )}
@@ -145,9 +150,11 @@ export default function Layout({ children, extraContact = null }) {
               </div>
             </Link>
 
+            {/*<FaAngleRight className="text-red-600 text-2xl mt-2 ml-2"/> {/* SVG angle-right icon */}
+            <IoIosArrowForward className="text-red-600  font-semibold text-2xl mt-2 ml-2" /> {/* SVG angle-right icon */}
             <Link href="/">
-              <h1 className="text-3xl font-extrabold tracking-wide ml-2 mt-1 text-black-600 hover:text-gold-900 transition-colors duration-500">
-                ｜BPOビジネスセンター
+              <h1 className="text-2xl font-extrabold tracking-wide ml-2 mt-1 text-black-600 hover:text-gold-900 transition-colors duration-500">
+                BPOビジネスセンター
               </h1>
             </Link>
 
@@ -402,8 +409,12 @@ export default function Layout({ children, extraContact = null }) {
             </nav>
             <div className="flex flex-col items-end gap-2">
               {/* Phone info */}
-              <div className="flex items-center gap-2 text-gray-700">
-                <span className="text-xl">📞</span>
+              <div className="flex items-center gap-1 text-gray-700">
+                {/*<FaCalculator className="text-white text-xl" />
+                //<span className="text-xl">📞</span>*/}
+
+
+                <FaPhone className="text-red-600 text-xl" /> {/* SVG phone icon */}
                 <span className="text-2xl font-bold">0123-456-789</span>
                 <span className="text-sm">受付時間：平日9:00〜18:00</span>
               </div>
