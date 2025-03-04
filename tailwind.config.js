@@ -8,7 +8,9 @@ module.exports = {
     extend: {
       colors: {
         gold: {
-          400: '#d4a017', // A rich, elegant gold color
+          400: "#f5c518",
+          500: "#e8b923",
+          600: "#d8a31f",
         },
       },
 
