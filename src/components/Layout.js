@@ -48,6 +48,12 @@ export default function Layout({ children, extraContact = null }) {
     setDropdownOpen((prev) => ({ ...prev, [type]: false }));
   };
 
+  const handleMenuClick = (path, isService) => {
+    setDropdownOpen({ services: false, cases: false });
+    setIsMenuOpen(false); // Close mobile menu
+    router.push(path);
+  };
+
   // Handle hover for underline effect
   const handleHover = (e, isActive) => {
     const li = e?.currentTarget?.closest("li");
@@ -83,12 +89,6 @@ export default function Layout({ children, extraContact = null }) {
     "office-automation": "事務作業の自動化",
     "inventory-improvement": "在庫管理の改善",
     "data-processing-speedup": "データ処理の高速化",
-  };
-
-  const handleMenuClick = (path, isService) => {
-    setDropdownOpen({ services: false, cases: false });
-    setIsMenuOpen(false); // Close mobile menu
-    router.push(path);
   };
 
   // Mobile menu styles (maintaining original styling)
@@ -136,6 +136,57 @@ export default function Layout({ children, extraContact = null }) {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900">
+
+      <style jsx>{`
+        @import url("https://fonts.googleapis.com/css?family=Varela+Round");
+
+        /* Remove or refine global selectors that might cause issues */
+        /* html, body, * , *:before, *:after { ... }  <- Removed or refined */
+        body, html {
+          font-family: "Varela Round", sans-serif;
+        }
+
+        /*  Use more specific class names to scope styles to the header menu */
+        .header-menu-wrapper { /* New wrapper class for the menu */
+          display: flex;
+          justify-content: center; /* Keep if you want menu centered */
+          align-items: center; /* Keep if you want menu items vertically centered */
+          max-width: 720px; /* Keep max-width if desired */
+          margin: 0 auto; /* Keep horizontal centering if desired */
+          list-style: none;
+        }
+        .header-menu-wrapper li { /* Target list items within the wrapper */
+          width: auto;
+          height: 50px;
+          transition: background-position-y 0.9s linear;
+          text-align: left;
+          position: relative; /* Added for positioning */
+        }
+        .header-menu-wrapper li a { /* Target links within list items in the wrapper */
+          font-size: 22px;
+          color: #777;
+          text-decoration: none;
+          padding-bottom: 2px;
+          transition: color 0.3s ease;
+          display: block;
+        }
+        .header-menu-wrapper li:hover { /* Hover effect for list items in the wrapper */
+          background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB2ZXJzaW9uPSIxLjEi%0D%0AIGlkPSJMYXllcl8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhs%0D%0AaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIKCSB3aWR0%0D%0AaD0iMzkwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDM5MCA1MCIgZW5hYmxlLWJhY2tn%0D%0Acm91bmQ9Im5ldyAwIDAgMzkwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPHBhdGggZmlsbD0i%0D%0Abm9uZSIgc3Ryb2tlPSIjZDk0ZjVjIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLW1pdGVybGlt%0D%0AaXQ9IjEwIiBkPSJNMCw0Ny41ODVjMCwwLDk3LjUsMCwxMzAsMAoJYzEzLjc1LDAsMjguNzQtMzgu%0D%0ANzc4LDQ2LjE2OC0xOS40MTZDMTkyLjY2OSw0Ni41LDI0My42MDMsNDcuNTg1LDI2MCw0Ny41ODVj%0D%0AMzEuODIxLDAsMTMwLDAsMTMwLDAiLz4KPC9zdmc+Cg==");
+          animation: header-line 1s; /* Renamed animation to be specific */
+        }
+        .header-menu-wrapper li:hover a { /* Hover link style in wrapper */
+          color:rgb(18, 169, 73);
+        }
+        .header-menu-wrapper li:not(:last-child) { /* Spacing for items in wrapper */
+          margin-right: 30px;
+        }
+        @keyframes header-line { /* Scoped keyframes animation */
+          0% {
+            background-position-x: 390px;
+          }
+        }
+      `}</style>
+
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="max-w-8xl mx-auto px-6">
@@ -162,23 +213,25 @@ export default function Layout({ children, extraContact = null }) {
 
             {/* Navigation */}
             <nav role="navigation" className="hidden md:block">
-              <ul ref={menuRef} className="flex gap-4 items-center relative"> {/* Added ref and relative for positioning */}
+              <ul ref={menuRef} className="header-menu-wrapper relative"> {/* Added ref and relative for positioning */}
                 {isClient && (
                   <>
-              <li>
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ type: "spring", stiffness: 300 }}
-                  >
-                    <Link
-                      href="/"
-                      className={`hover:underline px-0 py-3 block text-lg font-semibold whitespace-nowrap ${isActive("/") ? "underline text-blue-600" : "text-gray-900"}`}
-                    >
-                      私たちについて
-                    </Link>
-                  </motion.div>
-                </li>
-                    <li className="relative group" onMouseEnter={() => handleMouseEnter("services")} onMouseLeave={() => handleMouseLeave("services")}>
+                    <li className="menu-item">  {/* Keep menu-item class for existing JS logic */}
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                        className="relative"
+                      >
+                        <Link
+                          href="/"
+                          className={`hover:text-diamondGreen-600 block text-lg font-semibold whitespace-nowrap px-4 py-3 ${isActive("/") ? "text-diamondGreen-600" : "text-gray-900"
+                            }`}
+                        >
+                          私たちについて
+                        </Link>
+                      </motion.div>
+                    </li>
+                    <li className="menu-item relative group" onMouseEnter={() => handleMouseEnter("services")} onMouseLeave={() => handleMouseLeave("services")}> {/* Keep menu-item class */}
                       <motion.div
                         whileHover={{ scale: 1.05 }}
                         transition={{ type: "spring", stiffness: 300 }}
@@ -190,12 +243,10 @@ export default function Layout({ children, extraContact = null }) {
                             e.preventDefault();
                             handleMenuClick("/services", true);
                           }}
-                          className={`hover:underline block text-lg font-semibold whitespace-nowrap ${isActive("/services") ? "underline text-blue-600" : "text-gray-900"
+                          className={`hover:text-diamondGreen-600 block text-lg font-semibold whitespace-nowrap px-4 py-3 ${isActive("/services") ? "text-diamondGreen-600" : "text-gray-900"
                             }`}
                         >
-                          <span className="relative px-4 py-3">
-                            サービス
-                          </span>
+                          サービス
                         </Link>
                       </motion.div>
                       {/* Restored Dropdown Menu with Animation */}
@@ -216,7 +267,7 @@ export default function Layout({ children, extraContact = null }) {
                           <motion.li key={service.href} whileHover={{ scale: 1.05 }}>
                             <Link
                               href={service.href}
-                              className="block px-1 py-2 hover:bg-gray-100 text-base font-medium text-gray-800 hover:text-blue-600 whitespace-nowrap"
+                              className="block px-1 py-2 hover:bg-gray-100 text-base font-medium text-gray-800 hover:text-diamondGreen-600 whitespace-nowrap"
                               onClick={() => handleDropdownClick("services")}
                             >
                               {service.name}
@@ -237,12 +288,10 @@ export default function Layout({ children, extraContact = null }) {
                             e.preventDefault();
                             handleMenuClick("/cases", false);
                           }}
-                          className={`hover:underline block text-lg font-semibold whitespace-nowrap ${isActive("/cases") || router.pathname.startsWith("/cases/") ? "underline text-blue-600" : "text-gray-900"
+                          className={`hover:text-diamondGreen-600 block text-lg font-semibold whitespace-nowrap px-4 py-3 ${isActive("/cases") || router.pathname.startsWith("/cases/") ? "text-diamondGreen-600" : "text-gray-900"
                             }`}
                         >
-                          <span className="relative px-4 py-3">
-                            成功事例
-                          </span>
+                          成功事例
                         </Link>
                       </motion.div>
                       {/* Restored Dropdown Menu for 成功事例 with Animation */}
@@ -263,7 +312,7 @@ export default function Layout({ children, extraContact = null }) {
                           <motion.li key={caseStudy.href} whileHover={{ scale: 1.05 }}>
                             <Link
                               href={caseStudy.href}
-                              className="block px-1 py-2 hover:bg-gray-100 text-base font-medium text-gray-800 hover:text-blue-600 whitespace-nowrap"
+                              className="block px-1 py-2 hover:bg-gray-100 text-base font-medium text-gray-800 hover:text-diamondGreen-600 whitespace-nowrap"
                               onClick={() => handleDropdownClick("cases")}
                             >
                               {caseStudy.name}
@@ -284,12 +333,10 @@ export default function Layout({ children, extraContact = null }) {
                       >
                         <Link
                           href="/columns"
-                          className={`hover:underline block text-lg font-semibold whitespace-nowrap ${isActive("/columns") || router.pathname.startsWith("/columns/") ? "underline text-blue-600" : "text-gray-900"
+                          className={`hover:text-diamondGreen-600 block text-lg font-semibold whitespace-nowrap px-4 py-3 ${isActive("/columns") || router.pathname.startsWith("/columns/") ? "text-diamondGreen-600" : "text-gray-900"
                             }`}
                         >
-                          <span className="relative px-4 py-3">
-                            コラム
-                          </span>
+                          コラム
                         </Link>
                       </motion.div>
                     </li>
@@ -305,12 +352,10 @@ export default function Layout({ children, extraContact = null }) {
                       >
                         <Link
                           href="/faq"
-                          className={`hover:underline block text-lg font-semibold whitespace-nowrap ${isActive("/faq") ? "underline text-blue-600" : "text-gray-900"
+                          className={`hover:text-diamondGreen-600 block text-lg font-semibold whitespace-nowrap px-4 py-3 ${isActive("/faq") ? "text-diamondGreen-600" : "text-gray-900"
                             }`}
                         >
-                          <span className="relative px-4 py-3">
-                            FAQ
-                          </span>
+                          FAQ
                         </Link>
                       </motion.div>
                     </li>
@@ -325,20 +370,12 @@ export default function Layout({ children, extraContact = null }) {
                       >
                         <Link
                           href="/documents"
-                          className={`hover:underline px-4 py-3 block text-lg font-semibold whitespace-nowrap ${isActive("/documents") ? "underline text-blue-600" : "text-gray-900"}`}
+                          className={`hover:text-diamondGreen-600 block text-lg font-semibold whitespace-nowrap px-4 py-3 ${isActive("/documents") ? "text-diamondGreen-600" : "text-gray-900"}`}
                         >
                           資料請求
                         </Link>
                       </motion.div>
                     </li>
-                    {/* Underline */}
-                    <motion.div
-                      initial={{ scaleX: 0, x: underlineStyle.left }}
-                      animate={{ scaleX: underlineStyle.width / 100, x: underlineStyle.left }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                      className="absolute bottom-0 h-0.5 bg-blue-600 origin-center"
-                      style={{ transformOrigin: "left" }}
-                    />
                   </>
                 )}
               </ul>
