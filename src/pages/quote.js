@@ -216,7 +216,7 @@ export default function Quote() {
                             <span className="text-md font-medium text-gray-600">ランニング費用</span>
                             <FaCheckSquare className="text-green-500" />
                           </div>
-                          <span className="text-md text-gray-400 italic">他の項目の費用の10%を基本利用料の一部として総額に加算されます</span>
+                          <span className="text-md text-gray-400 ">他の項目の費用の10%を基本利用料の一部として総額に加算されます</span>
                         </div>                        <p className="text-md text-green-600 font-bold mt-2">
                           費用: ¥{selectedOptions.basicFee.value.toLocaleString()}
                         </p>
@@ -239,7 +239,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic">ECサイトの初期構築費用（必要に応じて選択）</p>
+                          <p className="text-gray-400 ">ECサイトの初期構築費用（必要に応じて選択）</p>
                         </div>
                         <select
                           name="ecEstablishment"
@@ -265,7 +265,7 @@ export default function Quote() {
                             )}
                           </div>
 
-                          <p className="text-gray-400 italic">ECサイトの継続的な運営費用（必要に応じて選択）</p>
+                          <p className="text-gray-400 ">ECサイトの継続的な運営費用（必要に応じて選択）</p>
 
                         </div>
                         <select
@@ -307,7 +307,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic">倉庫の地理的立地のコスト</p>
+                          <p className="text-gray-400 ">倉庫の地理的立地のコスト</p>
                         </div>
                         <select
                           name="storageLocation"
@@ -332,7 +332,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic mt-1">商品の保管に必要な温度管理のコスト</p>
+                          <p className="text-gray-400 mt-1">商品の保管に必要な温度管理のコスト</p>
 
                         </div>
                         <select
@@ -357,7 +357,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic">必要な倉庫の面積（坪単位で入力）</p>
+                          <p className="text-gray-400 ">必要な倉庫の面積（坪単位で入力）</p>
                         </div>
                         <input
                           type="number"
@@ -394,7 +394,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic">入荷する商品のケース数</p>
+                          <p className="text-gray-400 ">入荷する商品のケース数</p>
                         </div>
                         <input
                           type="number"
@@ -428,7 +428,7 @@ export default function Quote() {
                             )}
                           </div>
 
-                          <p className="text-gray-400 italic">出荷する注文の総件数</p>
+                          <p className="text-gray-400 ">出荷する注文の総件数</p>
                         </div>
                         <input
                           type="number"
@@ -449,7 +449,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic">各注文でピッキングされる商品の数</p>
+                          <p className="text-gray-400 ">各注文でピッキングされる商品の数</p>
                         </div>
                         <input
                           type="number"
@@ -470,7 +470,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic">各注文に同梱するチラシの数</p>
+                          <p className="text-gray-400 ">各注文に同梱するチラシの数</p>
                         </div>
                         <input
                           type="number"
@@ -491,7 +491,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic">発送に必要な資材の有無</p>
+                          <p className="text-gray-400 ">発送に必要な資材の有無</p>
                         </div>
 
                         <select
@@ -517,7 +517,7 @@ export default function Quote() {
                               <FaCheckSquare className="text-green-500" />
                             )}
                           </div>
-                          <p className="text-gray-400 italic">発送パッケージのサイズ。それ以上のサイズも対応可能。お問い合わせください</p>
+                          <p className="text-gray-400 ">発送パッケージのサイズ。それ以上のサイズも対応可能。お問い合わせください</p>
                         </div>
                         <select
                           data-category="size"

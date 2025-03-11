@@ -14,12 +14,30 @@ export default function Layout({ children, extraContact = null }) {
   const caseTimeoutRef = useRef(null);
   const router = useRouter();
   const [isClient, setIsClient] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
   const [underlineStyle, setUnderlineStyle] = useState({ width: 0, left: 0 });
 
   const menuRef = useRef(null);
 
+  const getCountdown = () => {
+    const currentDate = new Date();
+    const targetDate = new Date("2025-10-01T00:00:00");
+    const difference = targetDate - currentDate;
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((difference / 1000 / 60) % 60);
+    const seconds = Math.floor((difference / 1000) % 60);
+    return `${days}日 ${hours}時間 ${minutes
+      .toString()
+      .padStart(2, "0")}分 ${seconds.toString().padStart(2, "0")}秒`;
+  };
+
   useEffect(() => {
     setIsClient(true);
+    const timerID = setInterval(() => {
+      setTimeLeft(getCountdown());
+    }, 1000);
+    return () => clearInterval(timerID);
   }, []);
 
   const getCurrentDate = () => {
@@ -502,8 +520,14 @@ export default function Layout({ children, extraContact = null }) {
             </div>
           </div>
         </div>
-        <div className="w-full bg-red-600 text-white text-center py-1">
-          <p>こちらは{getCurrentDate()}に公開されたサンプルサイトです。　サイト責任者：BPO・阿部　信行</p>
+        <div className="w-full bg-red-600 text-white relative py-1">
+        <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-yellow-300 text-lg font-bold">
+            サイトオープンまで：{timeLeft}
+          </span>
+          <p className="text-center">
+            こちらは{getCurrentDate()}に公開されたサンプルサイトです。　サイト責任者：BPO・阿部　信行
+          </p>
+
         </div>
       </header>
 
