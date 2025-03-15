@@ -93,7 +93,7 @@ export default function Quote() {
 
         // Receiving
         const receivingQuantityValue = parseFloat(options.receivingQuantity.replace(/,/g, '')) || 0;
-        otherCosts += receivingQuantityValue * 80; // Adjusted receiving cost for inventory
+        otherCosts += receivingQuantityValue * 80;
 
         // Shipping
         const shipmentCountValue = parseFloat(options.shippingItems.shipmentCount.replace(/,/g, '')) || 0;
@@ -106,7 +106,55 @@ export default function Quote() {
         return baseCost + otherCosts + supplement;
       },
     },
-    "assembly": { name: "アセンブリ・セット作業", options: {}, calculateTotal: () => 0 },
+    "assembly": {
+      name: "アセンブリ・セット作業",
+      options: {
+        basicFee: { value: 50000, label: "アセンブリ基本費用", fixed: true },
+        storageLocation: { "指定なし": 3500, "都市近郊エリア": 5000, "都市エリア": 6500 },
+        storageTemperature: { "常温": 0, "冷蔵": 10000, "冷凍": 15000 },
+        storageArea: 0,
+        receivingQuantity: 0,
+        shippingItems: {
+          shipmentCount: 0,
+          setCount: 0, // New: セット点数
+          material: 0, // New: 発送資材有無
+          size: {
+            "4tチャーター（100㎞）": 50000,
+            "10tチャーター（100㎞）": 100000,
+            "100サイズ": 1000,
+          },
+        },
+      },
+      calculateTotal: (options) => {
+        let baseCost = options.basicFee.value; // Fixed ¥50,000
+        let otherCosts = 0;
+
+        // Storage
+        const storageLocationValue = quoteData["assembly"].options.storageLocation[options.storageLocation] ?? 0;
+        const storageTemperatureValue = quoteData["assembly"].options.storageTemperature[options.storageTemperature] ?? 0;
+        const storageAreaValue = parseFloat(options.storageArea.replace(/,/g, '')) || 0;
+        otherCosts += (storageLocationValue + storageTemperatureValue) * storageAreaValue;
+
+        // Receiving
+        const receivingQuantityValue = parseFloat(options.receivingQuantity.replace(/,/g, '')) || 0;
+        otherCosts += receivingQuantityValue * 80;
+
+        // Shipping
+        const shipmentCountValue = parseFloat(options.shippingItems.shipmentCount.replace(/,/g, '')) || 0;
+        const setCountValue = parseFloat(options.shippingItems.setCount.replace(/,/g, '')) || 0;
+        const materialValue = parseFloat(options.shippingItems.material.replace(/,/g, '')) || 0;
+        const sizeValue = quoteData["assembly"].options.shippingItems.size[options.shippingItems.size] ?? 0;
+        otherCosts +=
+          shipmentCountValue * 100 +
+          setCountValue * 100 + // ¥100 per set
+          materialValue * 100 + // ¥100 per material unit
+          sizeValue * materialValue; // Size cost multiplied by material count
+
+        // Add 10% supplement of other costs
+        const supplement = otherCosts * 0.1;
+        return baseCost + otherCosts + supplement;
+      },
+    },
     "secretariat": { name: "事務局代行", options: {}, calculateTotal: () => 0 },
     "data-processing": { name: "データ処理・オーバープリント", options: {}, calculateTotal: () => 0 },
   };
@@ -126,6 +174,7 @@ export default function Quote() {
       insertCount: "",
       material: "",
       size: "",
+      setCount: "", // Added for assembly
     },
   });
 
@@ -148,6 +197,7 @@ export default function Quote() {
   // Check if all required fields are filled
   const isFormComplete = () => {
     const isEcFulfillment = selectedUnit === "ec-fulfillment";
+    const isAssembly = selectedUnit === "assembly";
     return (
       (isEcFulfillment ? selectedOptions.ecEstablishment !== "" && selectedOptions.ecOperation !== "" : true) &&
       selectedOptions.storageLocation !== "" &&
@@ -155,8 +205,10 @@ export default function Quote() {
       selectedOptions.storageArea !== "" &&
       selectedOptions.receivingQuantity !== "" &&
       selectedOptions.shippingItems.shipmentCount !== "" &&
-      selectedOptions.shippingItems.pickingCount !== "" &&
-      (isEcFulfillment ? selectedOptions.shippingItems.insertCount !== "" && selectedOptions.shippingItems.material !== "" : true) &&
+      (isEcFulfillment || selectedUnit === "inventory" ? selectedOptions.shippingItems.pickingCount !== "" : true) &&
+      (isEcFulfillment ? selectedOptions.shippingItems.insertCount !== "" : true) &&
+      (isEcFulfillment || isAssembly ? selectedOptions.shippingItems.material !== "" : true) &&
+      (isAssembly ? selectedOptions.shippingItems.setCount !== "" : true) &&
       selectedOptions.shippingItems.size !== ""
     );
   };
@@ -233,6 +285,7 @@ export default function Quote() {
                               insertCount: "",
                               material: "",
                               size: "",
+                              setCount: "",
                             },
                           }
                         : {
@@ -242,7 +295,9 @@ export default function Quote() {
                             receivingQuantity: "",
                             shippingItems: {
                               shipmentCount: "",
-                              pickingCount: "",
+                              pickingCount: unit === "assembly" ? undefined : "",
+                              setCount: unit === "assembly" ? "" : undefined,
+                              material: unit === "assembly" ? "" : undefined,
                               size: "",
                             },
                           }),
@@ -786,7 +841,7 @@ export default function Quote() {
                           }}
                           thousandSeparator=","
                           decimalScale={0}
-                          className="mt-1 block w-full rounded-md border-grey-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                           placeholder="数量を入力"
                         />
                         <p className="text-md text-green-600 font-bold mt-2">
@@ -885,6 +940,292 @@ export default function Quote() {
                             (parseFloat(selectedOptions.shippingItems.pickingCount.replace(/,/g, '')) || 0) * 30 +
                             (quoteData["inventory"].options.shippingItems.size[selectedOptions.shippingItems.size] ?? 0) *
                             (parseFloat(selectedOptions.shippingItems.shipmentCount.replace(/,/g, '')) || 0)
+                          ).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <button
+                        type="submit"
+                        className={`w-full px-6 py-3 rounded font-bold transition-colors ${isFormComplete()
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          }`}
+                        disabled={!isFormComplete()}
+                      >
+                        見積を取得
+                      </button>
+                      {!isFormComplete() && (
+                        <div className="absolute left-1/2 transform -translate-x-1/2 -top-10 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
+                          すべての項目を入力してください
+                        </div>
+                      )}
+                    </div>
+                  </form>
+                )}
+                {selectedUnit === "assembly" && (
+                  <form onSubmit={handleSubmit} className="space-y-8">
+                    {/* 1. Basic Usage Fee */}
+                    <div className="border-l-4 border-blue-500 bg-gray-50 p-4 rounded-r-lg">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-semibold text-gray-800">1.</span>
+                        <label className="block text-lg font-semibold text-gray-700">基本利用料</label>
+                      </div>
+                      <div className="mt-2 ml-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-md font-medium text-gray-600">アセンブリ基本費用</span>
+                            <FaCheckSquare className="text-green-500" />
+                          </div>
+                          <span className="text-md text-gray-400">他の項目の費用の10%を基本利用料の一部として総額に加算されます</span>
+                        </div>
+                        <p className="text-md text-green-600 font-bold mt-2">
+                          費用: ¥{selectedOptions.basicFee.value.toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* 2. Storage */}
+                    <div className="border-l-4 border-blue-500 bg-gray-50 p-4 rounded-r-lg">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-semibold text-gray-800">2.</span>
+                        <label className="block text-lg font-semibold text-gray-700">保管</label>
+                      </div>
+                      <div className="mt-2 ml-6 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <label className="block text-md font-medium text-gray-600">倉庫（作業）の場所</label>
+                            {selectedOptions.storageLocation === "" ? (
+                              <FaSquare className="text-gray-400" />
+                            ) : (
+                              <FaCheckSquare className="text-green-500" />
+                            )}
+                          </div>
+                          <p className="text-gray-400">倉庫の地理的立地のコスト</p>
+                        </div>
+                        <select
+                          name="storageLocation"
+                          value={selectedOptions.storageLocation}
+                          onChange={handleChange}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        >
+                          <option value="">選択してください</option>
+                          {Object.entries(quoteData["assembly"].options.storageLocation).map(([key, value]) => (
+                            <option key={key} value={key}>
+                              {key} - ¥{value.toLocaleString()}
+                            </option>
+                          ))}
+                        </select>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <label className="block text-md font-medium text-gray-600">倉庫の温度管理</label>
+                            {selectedOptions.storageTemperature === "" ? (
+                              <FaSquare className="text-gray-400" />
+                            ) : (
+                              <FaCheckSquare className="text-green-500" />
+                            )}
+                          </div>
+                          <p className="text-gray-400">商品の保管に必要な温度管理のコスト</p>
+                        </div>
+                        <select
+                          name="storageTemperature"
+                          value={selectedOptions.storageTemperature}
+                          onChange={handleChange}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        >
+                          <option value="">選択してください</option>
+                          {Object.entries(quoteData["assembly"].options.storageTemperature).map(([key, value]) => (
+                            <option key={key} value={key}>
+                              {key} - ¥{value.toLocaleString()}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <label className="block text-md font-medium text-gray-600">倉庫の必要坪数</label>
+                            {selectedOptions.storageArea === "" ? (
+                              <FaSquare className="text-gray-400" />
+                            ) : (
+                              <FaCheckSquare className="text-green-500" />
+                            )}
+                          </div>
+                          <p className="text-gray-400">必要な倉庫の面積（坪単位で入力）</p>
+                        </div>
+                        <NumericFormat
+                          name="storageArea"
+                          value={selectedOptions.storageArea}
+                          onValueChange={({ value }) => {
+                            setSelectedOptions((prev) => ({ ...prev, storageArea: value }));
+                          }}
+                          thousandSeparator=","
+                          decimalScale={0}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          placeholder="坪数を入力"
+                        />
+                        <p className="text-md text-green-600 font-bold mt-2">
+                          保管費用: ¥
+                          {(((quoteData["assembly"].options.storageLocation[selectedOptions.storageLocation] ?? 0) +
+                            (quoteData["assembly"].options.storageTemperature[selectedOptions.storageTemperature] ?? 0)) *
+                            (parseFloat(selectedOptions.storageArea.replace(/,/g, '')) || 0)
+                          ).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* 3. Receiving */}
+                    <div className="border-l-4 border-blue-500 bg-gray-50 p-4 rounded-r-lg">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-semibold text-gray-800">3.</span>
+                        <label className="block text-lg font-semibold text-gray-700">入荷</label>
+                      </div>
+                      <div className="mt-2 ml-6 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <label className="block text-md font-medium text-gray-600">入荷数量（ケース）</label>
+                            {selectedOptions.receivingQuantity === "" ? (
+                              <FaSquare className="text-gray-400" />
+                            ) : (
+                              <FaCheckSquare className="text-green-500" />
+                            )}
+                          </div>
+                          <p className="text-gray-400">入荷する商品のケース数</p>
+                        </div>
+                        <NumericFormat
+                          name="receivingQuantity"
+                          value={selectedOptions.receivingQuantity}
+                          onValueChange={({ value }) => {
+                            setSelectedOptions((prev) => ({ ...prev, receivingQuantity: value }));
+                          }}
+                          thousandSeparator=","
+                          decimalScale={0}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          placeholder="数量を入力"
+                        />
+                        <p className="text-md text-green-600 font-bold mt-2">
+                          入荷費用: ¥{((parseFloat(selectedOptions.receivingQuantity.replace(/,/g, '')) || 0) * 80).toLocaleString()}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* 4. Shipping */}
+                    <div className="border-l-4 border-blue-500 bg-gray-50 p-4 rounded-r-lg">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-lg font-semibold text-gray-800">4.</span>
+                        <label className="block text-lg font-semibold text-gray-700">出荷</label>
+                      </div>
+                      <div className="mt-2 ml-6 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <label className="block text-md font-medium text-gray-600">出荷件数</label>
+                            {selectedOptions.shippingItems.shipmentCount === "" ? (
+                              <FaSquare className="text-gray-400" />
+                            ) : (
+                              <FaCheckSquare className="text-green-500" />
+                            )}
+                          </div>
+                          <p className="text-gray-400">出荷する注文の総件数</p>
+                        </div>
+                        <NumericFormat
+                          name="shipmentCount"
+                          value={selectedOptions.shippingItems.shipmentCount}
+                          onValueChange={({ value }) => {
+                            setSelectedOptions((prev) => ({
+                              ...prev,
+                              shippingItems: { ...prev.shippingItems, shipmentCount: value },
+                            }));
+                          }}
+                          thousandSeparator=","
+                          decimalScale={0}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          placeholder="件数を入力"
+                        />
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <label className="block text-md font-medium text-gray-600">セット点数</label>
+                            {selectedOptions.shippingItems.setCount === "" ? (
+                              <FaSquare className="text-gray-400" />
+                            ) : (
+                              <FaCheckSquare className="text-green-500" />
+                            )}
+                          </div>
+                          <p className="text-gray-400">アセンブリするセットの点数</p>
+                        </div>
+                        <NumericFormat
+                          name="setCount"
+                          value={selectedOptions.shippingItems.setCount}
+                          onValueChange={({ value }) => {
+                            setSelectedOptions((prev) => ({
+                              ...prev,
+                              shippingItems: { ...prev.shippingItems, setCount: value },
+                            }));
+                          }}
+                          thousandSeparator=","
+                          decimalScale={0}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          placeholder="点数を入力"
+                        />
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <label className="block text-md font-medium text-gray-600">発送資材の数</label>
+                            {selectedOptions.shippingItems.material === "" ? (
+                              <FaSquare className="text-gray-400" />
+                            ) : (
+                              <FaCheckSquare className="text-green-500" />
+                            )}
+                          </div>
+                          <p className="text-gray-400">発送に必要な資材の数</p>
+                        </div>
+                        <NumericFormat
+                          name="material"
+                          value={selectedOptions.shippingItems.material}
+                          onValueChange={({ value }) => {
+                            setSelectedOptions((prev) => ({
+                              ...prev,
+                              shippingItems: { ...prev.shippingItems, material: value },
+                            }));
+                          }}
+                          thousandSeparator=","
+                          decimalScale={0}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                          placeholder="資材の数を入力。不要の場合は0"
+                        />
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <label className="block text-md font-medium text-gray-600">発送サイズ</label>
+                            {selectedOptions.shippingItems.size === "" ? (
+                              <FaSquare className="text-gray-400" />
+                            ) : (
+                              <FaCheckSquare className="text-green-500" />
+                            )}
+                          </div>
+                          <p className="text-gray-400">他のサイズも対応可能です。詳細はお問い合わせください。</p>
+                        </div>
+                        <select
+                          data-category="size"
+                          value={selectedOptions.shippingItems.size}
+                          onChange={handleChange}
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
+                        >
+                          <option value="">選択してください</option>
+                          {Object.entries(quoteData["assembly"].options.shippingItems.size).map(([key, value]) => (
+                            <option key={key} value={key}>
+                              {key} - ¥{value.toLocaleString()}
+                            </option>
+                          ))}
+                        </select>
+                        <p className="text-md text-green-600 font-bold mt-2">
+                          出荷費用: ¥
+                          {(
+                            (parseFloat(selectedOptions.shippingItems.shipmentCount.replace(/,/g, '')) || 0) * 100 +
+                            (parseFloat(selectedOptions.shippingItems.setCount.replace(/,/g, '')) || 0) * 100 +
+                            (parseFloat(selectedOptions.shippingItems.material.replace(/,/g, '')) || 0) * 100 +
+                            (quoteData["assembly"].options.shippingItems.size[selectedOptions.shippingItems.size] ?? 0) *
+                            (parseFloat(selectedOptions.shippingItems.material.replace(/,/g, '')) || 0)
                           ).toLocaleString()}
                         </p>
                       </div>
