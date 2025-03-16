@@ -520,14 +520,15 @@ export default function Layout({ children, extraContact = null }) {
             </div>
           </div>
         </div>
-        <div className="w-full bg-red-600 text-white relative py-1">
-        <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-yellow-300 text-lg font-bold">
+        <div className="w-full bg-red-600 text-white relative py-1 flex justify-center items-center">
+          <span className="text-yellow-300 text-lg font-bold">
             サイトオープンまで：{timeLeft}
           </span>
-          <p className="text-center">
-            こちらは{getCurrentDate()}に公開されたサンプルサイトです。　サイト責任者：BPO・阿部　信行
-          </p>
-
+          {/*
+  <p className="text-center">
+    こちらは{getCurrentDate()}に公開されたサンプルサイトです。　サイト責任者：BPO・阿部　信行
+  </p>
+  */}
         </div>
       </header>
 
