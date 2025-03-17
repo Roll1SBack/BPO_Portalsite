@@ -2,6 +2,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import PaperSizeSlider from "@/components/PaperSizeSlider";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCheckSquare, FaSquare } from "react-icons/fa"; // For elegant checkmarks
 import { NumericFormat } from "react-number-format"; // For formatting numbers
@@ -11,7 +12,17 @@ export default function Quote() {
   const [selectedUnit, setSelectedUnit] = useState("ec-fulfillment"); // Default to EC Fulfillment
   const [result, setResult] = useState(null);
   const [paperError, setPaperError] = useState(false); // Added for paper type validation in data-processing
+  const [setNumberError, setSetNumberError] = useState(""); // Added for set number validation in data-processing
   const resultRef = useRef(null); // Ref for scrolling to result
+  const formRef = useRef(null); // Ref for scrolling to form
+
+  useEffect(() => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [selectedUnit]);
 
   // Add modal state
   const [showModal, setShowModal] = useState(false);
@@ -354,7 +365,7 @@ export default function Quote() {
       </div>
     );
   };
-  
+
   // Handle form changes
   const handleChange = (e) => {
     const { name, value, dataset } = e.target;
@@ -431,11 +442,13 @@ export default function Quote() {
         setNumber >= 1000 &&
         setNumber <= 10000 &&
         (selectedOptions.itemType === "請求書・納品書 (長3封筒・セット無)" || selectedOptions.setupRequired !== "") &&
-        allPapersFilled && // Ensure all 8 fields are filled (can be 0)
+        totalPaperSum >= 1 && // Ensure all 8 fields are filled (can be 0)
         totalPaperSum <= 8 && // Ensure the sum is not over 8
         !paperError
       );
     }
+
+    // Default to storage unit
     return (
       selectedOptions.storageLocation !== "" &&
       selectedOptions.storageTemperature !== "" &&
@@ -526,7 +539,7 @@ export default function Quote() {
                     setPaperError(false); // Reset paper error state
                     // Reset selectedOptions based on the selected unit
                     setSelectedOptions({
-                      basicFee: quoteData[unit].options.basicFee,
+                      basicFee: quoteData[unit].options.basicFee || { value: 0, label: "" }, // Fallback for units without basicFee
                       // Fields specific to "ec-fulfillment"
                       ecEstablishment: unit === "ec-fulfillment" ? "" : undefined,
                       ecOperation: unit === "ec-fulfillment" ? "" : undefined,
@@ -539,17 +552,16 @@ export default function Quote() {
                       itemType: unit === "data-processing" ? "" : undefined,
                       setNumber: unit === "data-processing" ? "" : undefined,
                       setupRequired: unit === "data-processing" ? "" : undefined,
-                      // Always include paperSizes to prevent undefined errors
-                      paperSizes: {
-                        a4_55kg_double_color: "",
-                        a4_55kg_single_mono: "",
-                        a4_90kg_double_color: "",
-                        a4_90kg_single_mono: "",
-                        a3_55kg_double_color: "",
-                        a3_55kg_single_mono: "",
-                        a3_90kg_double_color: "",
-                        a3_90kg_single_mono: "",
-                      },
+                      paperSizes: unit === "data-processing" ? {
+                        a4_55kg_double_color: "0",
+                        a4_55kg_single_mono: "0",
+                        a4_90kg_double_color: "0",
+                        a4_90kg_single_mono: "0",
+                        a3_55kg_double_color: "0",
+                        a3_55kg_single_mono: "0",
+                        a3_90kg_double_color: "0",
+                        a3_90kg_single_mono: "0",
+                      } : undefined,
                       // Fields for units that use shipping (ec-fulfillment, inventory, assembly)
                       shippingItems: unit !== "data-processing" && unit !== "secretariat" ? {
                         shipmentCount: "",
@@ -943,7 +955,12 @@ export default function Quote() {
                       </div>
                     </div>
 
-                    <div className="relative">
+                    <div className="flex flex-col items-center">
+                      {!isFormComplete() && (
+                        <p className="mb-0 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
+                          すべての項目を入力してください
+                        </p>
+                      )}
                       <button
                         type="submit"
                         className={`w-full px-6 py-3 rounded font-bold transition-colors ${isFormComplete()
@@ -954,11 +971,6 @@ export default function Quote() {
                       >
                         見積を取得
                       </button>
-                      {!isFormComplete() && (
-                        <div className="absolute left-1/2 transform -translate-x-1/2 -top-10 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
-                          すべての項目を入力してください
-                        </div>
-                      )}
                     </div>
                   </form>
                 )}
@@ -1202,7 +1214,12 @@ export default function Quote() {
                       </div>
                     </div>
 
-                    <div className="relative">
+                    <div className="flex flex-col items-center">
+                      {!isFormComplete() && (
+                        <p className="mb-0 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
+                          すべての項目を入力してください
+                        </p>
+                      )}
                       <button
                         type="submit"
                         className={`w-full px-6 py-3 rounded font-bold transition-colors ${isFormComplete()
@@ -1213,11 +1230,6 @@ export default function Quote() {
                       >
                         見積を取得
                       </button>
-                      {!isFormComplete() && (
-                        <div className="absolute left-1/2 transform -translate-x-1/2 -top-10 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
-                          すべての項目を入力してください
-                        </div>
-                      )}
                     </div>
                   </form>
                 )}
@@ -1488,7 +1500,12 @@ export default function Quote() {
                       </div>
                     </div>
 
-                    <div className="relative">
+                    <div className="flex flex-col items-center">
+                      {!isFormComplete() && (
+                        <p className="mb-0 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
+                          すべての項目を入力してください
+                        </p>
+                      )}
                       <button
                         type="submit"
                         className={`w-full px-6 py-3 rounded font-bold transition-colors ${isFormComplete()
@@ -1499,16 +1516,11 @@ export default function Quote() {
                       >
                         見積を取得
                       </button>
-                      {!isFormComplete() && (
-                        <div className="absolute left-1/2 transform -translate-x-1/2 -top-10 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
-                          すべての項目を入力してください
-                        </div>
-                      )}
                     </div>
                   </form>
                 )}
                 {selectedUnit === "data-processing" && (
-                  <form onSubmit={handleSubmit} className="space-y-8">
+                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-8">
                     {/* 1. Item Type */}
                     <div className="border-l-4 border-blue-500 bg-gray-50 p-4 rounded-r-lg">
                       <div className="flex items-center space-x-2">
@@ -1553,7 +1565,11 @@ export default function Quote() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <label className="block text-md font-medium text-gray-600">セット数（1,000〜10,000セット）</label>
-                            {selectedOptions.setNumber === "" ? (
+                            {(
+                              (selectedOptions.setNumber === "") ||
+                              selectedOptions.setNumber < 1000 ||
+                              selectedOptions.setNumber > 10000
+                            ) ? (
                               <FaSquare className="text-gray-400" />
                             ) : (
                               <FaCheckSquare className="text-green-500" />
@@ -1567,26 +1583,27 @@ export default function Quote() {
                           onValueChange={({ value }) => {
                             // Update the state with the current value while typing
                             setSelectedOptions((prev) => ({ ...prev, setNumber: value }));
-                          }}
-                          onBlur={() => {
-                            // Validate the value when the user leaves the input field
-                            const numValue = parseFloat(selectedOptions.setNumber.replace(/,/g, '')) || 0;
-                            if (numValue < 1000 || numValue > 10000) {
-                              // Reset to empty if the value is out of range
-                              setSelectedOptions((prev) => ({ ...prev, setNumber: "" }));
-                              alert("セット数は1,000〜10,000の範囲で入力してください。");
+                            // Validate the value: allow empty input or numbers within range
+                            if (value === "") {
+                              setSetNumberError("");
+                            } else {
+                              const numericValue = parseFloat(value);
+                              if (numericValue < 1000 || numericValue > 10000) {
+                                setSetNumberError("数値は1,000〜10,000の範囲で入力してください");
+                              } else {
+                                setSetNumberError("");
+                              }
                             }
                           }}
-                          isAllowed={(values) => {
-                            // Allow all intermediate values while typing
-                            // We'll validate the final value in onBlur
-                            return true;
-                          }}
+                          isAllowed={() => true} // allow any intermediate input
                           thousandSeparator=","
                           decimalScale={0}
                           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                           placeholder="セット数を入力 (1,000〜10,000)"
                         />
+                        {setNumberError && (
+                          <p className="mt-1 text-red-600 text-sm">{setNumberError}</p>
+                        )}
                       </div>
                     </div>
 
@@ -1631,294 +1648,154 @@ export default function Quote() {
                       <div className="flex items-center space-x-2">
                         <span className="text-lg font-semibold text-gray-800">{selectedOptions.itemType === "請求書・納品書 (長3封筒・セット無)" ? "3." : "4."}</span>
                         <label className="block text-lg font-semibold text-gray-700">用紙選択</label>
-                        {/* Grey/green icon: green when all 8 fields are not empty */}
-                        {Object.values(selectedOptions.paperSizes).every(val => val !== "") ? (
-                          <FaCheckSquare className="text-green-500" />
-                        ) : (
-                          <FaSquare className="text-gray-400" />
-                        )}
+                        {(() => {
+                          const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val) || 0);
+                          const totalPaper = paperCounts.reduce((sum, v) => sum + v, 0);
+                          const allFilled = totalPaper > 0;
+                          const icon =
+                            allFilled && totalPaper <= 8 ? (
+                              <FaCheckSquare className="text-green-500" />
+                            ) : (
+                              <FaSquare className="text-gray-400" />
+                            );
+                          const message =
+                            totalPaper <= 8 ? (
+                              <span className="text-green-500 text-sm font-semibold">今選択された用紙枚数は{totalPaper}枚です</span>
+                            ) : (
+                              <span className="text-red-500 text-sm font-semibold">合計が8枚を超えています! (対応しかねません)</span>
+                            );
+
+                          return (
+                            <>
+                              {icon}
+                              {message}
+                            </>
+                          );
+                        })()}
                       </div>
                       <div className="mt-2 ml-6 space-y-3">
                         {/* Add a note to inform users they can input 0 */}
-                        <p className="text-sm text-gray-500">各用紙の数量を入力してください（0も入力可能です）。合計数量は8を超えることはできません。</p>
+                        <p className="text-sm text-gray-500">各用紙の数量を選んでください（初始値0）。合計数量は8を超えることはできません。</p>
                         {/* A4 Papers */}
                         <div className="space-y-2">
                           <h4 className="text-md font-semibold text-gray-700">A4用紙</h4>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-2 gap-x-8 gap-y-8">
                             <div>
-                              <label className="block text-sm font-medium text-gray-600">55kg 両面カラー</label>
-                              <NumericFormat
-                                name="a4_55kg_double_color"
-                                value={selectedOptions.paperSizes.a4_55kg_double_color}
-                                onValueChange={({ value }) => {
-                                  const updatedPaperSizes = { ...selectedOptions.paperSizes, a4_55kg_double_color: value };
-                                  const paperCounts = Object.values(updatedPaperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum <= 8 || value === "") {
-                                    handleChange({ target: { name: "a4_55kg_double_color", value, dataset: { category: "paperSizes" } } });
-                                  } else {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                  }
+                              {/* <label className="block text-sm font-medium text-gray-600">55kg 両面カラー</label> */}
+                              <PaperSizeSlider
+                                label="55kg 両面カラー (A4)"
+                                value={parseInt(selectedOptions.paperSizes.a4_55kg_double_color, 10)}
+                                onChange={(val) => {
+                                  // Update paperSizes state as string for consistency:
+                                  setSelectedOptions((prev) => ({
+                                    ...prev,
+                                    paperSizes: { ...prev.paperSizes, a4_55kg_double_color: String(val) },
+                                  }));
                                 }}
-                                onBlur={() => {
-                                  const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum > 8) {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                    handleChange({ target: { name: "a4_55kg_double_color", value: "0", dataset: { category: "paperSizes" } } });
-                                  }
-                                }}
-                                thousandSeparator=","
-                                decimalScale={0}
-                                allowNegative={false} // Prevent negative numbers
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="数量を入力（0も可）"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-600">55kg 片面モノクロ</label>
-                              <NumericFormat
-                                name="a4_55kg_single_mono"
-                                value={selectedOptions.paperSizes.a4_55kg_single_mono}
-                                onValueChange={({ value }) => {
-                                  const updatedPaperSizes = { ...selectedOptions.paperSizes, a4_55kg_single_mono: value };
-                                  const paperCounts = Object.values(updatedPaperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum <= 8 || value === "") {
-                                    handleChange({ target: { name: "a4_55kg_single_mono", value, dataset: { category: "paperSizes" } } });
-                                  } else {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                  }
+                              <PaperSizeSlider
+                                label="55kg 片面モノクロ (A4)"
+                                value={parseInt(selectedOptions.paperSizes.a4_55kg_single_mono, 10)}
+                                onChange={(val) => {
+                                  setSelectedOptions((prev) => ({
+                                    ...prev,
+                                    paperSizes: { ...prev.paperSizes, a4_55kg_single_mono: String(val) },
+                                  }));
                                 }}
-                                onBlur={() => {
-                                  const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum > 8) {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                    handleChange({ target: { name: "a4_55kg_single_mono", value: "0", dataset: { category: "paperSizes" } } });
-                                  }
-                                }}
-                                thousandSeparator=","
-                                decimalScale={0}
-                                allowNegative={false}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="数量を入力（0も可）"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-600">90kg 両面カラー</label>
-                              <NumericFormat
-                                name="a4_90kg_double_color"
-                                value={selectedOptions.paperSizes.a4_90kg_double_color}
-                                onValueChange={({ value }) => {
-                                  const updatedPaperSizes = { ...selectedOptions.paperSizes, a4_90kg_double_color: value };
-                                  const paperCounts = Object.values(updatedPaperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum <= 8 || value === "") {
-                                    handleChange({ target: { name: "a4_90kg_double_color", value, dataset: { category: "paperSizes" } } });
-                                  } else {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                  }
+                              <PaperSizeSlider
+                                label="90kg 両面カラー (A4)"
+                                value={parseInt(selectedOptions.paperSizes.a4_90kg_double_color, 10)}
+                                onChange={(val) => {
+                                  setSelectedOptions((prev) => ({
+                                    ...prev,
+                                    paperSizes: { ...prev.paperSizes, a4_90kg_double_color: String(val) },
+                                  }));
                                 }}
-                                onBlur={() => {
-                                  const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum > 8) {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                    handleChange({ target: { name: "a4_90kg_double_color", value: "0", dataset: { category: "paperSizes" } } });
-                                  }
-                                }}
-                                thousandSeparator=","
-                                decimalScale={0}
-                                allowNegative={false}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="数量を入力（0も可）"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-600">90kg 片面モノクロ</label>
-                              <NumericFormat
-                                name="a4_90kg_single_mono"
-                                value={selectedOptions.paperSizes.a4_90kg_single_mono}
-                                onValueChange={({ value }) => {
-                                  const updatedPaperSizes = { ...selectedOptions.paperSizes, a4_90kg_single_mono: value };
-                                  const paperCounts = Object.values(updatedPaperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum <= 8 || value === "") {
-                                    handleChange({ target: { name: "a4_90kg_single_mono", value, dataset: { category: "paperSizes" } } });
-                                  } else {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                  }
+                              <PaperSizeSlider
+                                label="90kg 片面モノクロ (A4)"
+                                value={parseInt(selectedOptions.paperSizes.a4_90kg_single_mono, 10)}
+                                onChange={(val) => {
+                                  setSelectedOptions((prev) => ({
+                                    ...prev,
+                                    paperSizes: { ...prev.paperSizes, a4_90kg_single_mono: String(val) },
+                                  }));
                                 }}
-                                onBlur={() => {
-                                  const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum > 8) {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                    handleChange({ target: { name: "a4_90kg_single_mono", value: "0", dataset: { category: "paperSizes" } } });
-                                  }
-                                }}
-                                thousandSeparator=","
-                                decimalScale={0}
-                                allowNegative={false}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="数量を入力（0も可）"
                               />
                             </div>
                           </div>
                         </div>
 
                         {/* A3 Papers */}
-                        <div className="space-y-2 mt-4">
+                        <div className="space-y-2 pt-8 pb-4">
                           <h4 className="text-md font-semibold text-gray-700">A3用紙</h4>
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-2 gap-x-8 gap-y-8">
                             <div>
-                              <label className="block text-sm font-medium text-gray-600">55kg 両面カラー</label>
-                              <NumericFormat
-                                name="a3_55kg_double_color"
-                                value={selectedOptions.paperSizes.a3_55kg_double_color}
-                                onValueChange={({ value }) => {
-                                  const updatedPaperSizes = { ...selectedOptions.paperSizes, a3_55kg_double_color: value };
-                                  const paperCounts = Object.values(updatedPaperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum <= 8 || value === "") {
-                                    handleChange({ target: { name: "a3_55kg_double_color", value, dataset: { category: "paperSizes" } } });
-                                  } else {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                  }
+                              <PaperSizeSlider
+                                label="55kg 両面カラー (A3)"
+                                value={parseInt(selectedOptions.paperSizes.a3_55kg_double_color, 10)}
+                                onChange={(val) => {
+                                  setSelectedOptions((prev) => ({
+                                    ...prev,
+                                    paperSizes: { ...prev.paperSizes, a3_55kg_double_color: String(val) },
+                                  }));
                                 }}
-                                onBlur={() => {
-                                  const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum > 8) {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                    handleChange({ target: { name: "a3_55kg_double_color", value: "0", dataset: { category: "paperSizes" } } });
-                                  }
-                                }}
-                                thousandSeparator=","
-                                decimalScale={0}
-                                allowNegative={false}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="数量を入力（0も可）"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-600">55kg 片面モノクロ</label>
-                              <NumericFormat
-                                name="a3_55kg_single_mono"
-                                value={selectedOptions.paperSizes.a3_55kg_single_mono}
-                                onValueChange={({ value }) => {
-                                  const updatedPaperSizes = { ...selectedOptions.paperSizes, a3_55kg_single_mono: value };
-                                  const paperCounts = Object.values(updatedPaperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum <= 8 || value === "") {
-                                    handleChange({ target: { name: "a3_55kg_single_mono", value, dataset: { category: "paperSizes" } } });
-                                  } else {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                  }
+                              <PaperSizeSlider
+                                label="55kg 片面モノクロ (A3)"
+                                value={parseInt(selectedOptions.paperSizes.a3_55kg_single_mono, 10)}
+                                onChange={(val) => {
+                                  setSelectedOptions((prev) => ({
+                                    ...prev,
+                                    paperSizes: { ...prev.paperSizes, a3_55kg_single_mono: String(val) },
+                                  }));
                                 }}
-                                onBlur={() => {
-                                  const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum > 8) {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                    handleChange({ target: { name: "a3_55kg_single_mono", value: "0", dataset: { category: "paperSizes" } } });
-                                  }
-                                }}
-                                thousandSeparator=","
-                                decimalScale={0}
-                                allowNegative={false}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="数量を入力（0も可）"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-600">90kg 両面カラー</label>
-                              <NumericFormat
-                                name="a3_90kg_double_color"
-                                value={selectedOptions.paperSizes.a3_90kg_double_color}
-                                onValueChange={({ value }) => {
-                                  const updatedPaperSizes = { ...selectedOptions.paperSizes, a3_90kg_double_color: value };
-                                  const paperCounts = Object.values(updatedPaperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum <= 8 || value === "") {
-                                    handleChange({ target: { name: "a3_90kg_double_color", value, dataset: { category: "paperSizes" } } });
-                                  } else {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                  }
+                              <PaperSizeSlider
+                                label="90kg 両面カラー (A3)"
+                                value={parseInt(selectedOptions.paperSizes.a3_90kg_double_color, 10)}
+                                onChange={(val) => {
+                                  setSelectedOptions((prev) => ({
+                                    ...prev,
+                                    paperSizes: { ...prev.paperSizes, a3_90kg_double_color: String(val) },
+                                  }));
                                 }}
-                                onBlur={() => {
-                                  const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum > 8) {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                    handleChange({ target: { name: "a3_90kg_double_color", value: "0", dataset: { category: "paperSizes" } } });
-                                  }
-                                }}
-                                thousandSeparator=","
-                                decimalScale={0}
-                                allowNegative={false}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="数量を入力（0も可）"
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-600">90kg 片面モノクロ</label>
-                              <NumericFormat
-                                name="a3_90kg_single_mono"
-                                value={selectedOptions.paperSizes.a3_90kg_single_mono}
-                                onValueChange={({ value }) => {
-                                  const updatedPaperSizes = { ...selectedOptions.paperSizes, a3_90kg_single_mono: value };
-                                  const paperCounts = Object.values(updatedPaperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum <= 8 || value === "") {
-                                    handleChange({ target: { name: "a3_90kg_single_mono", value, dataset: { category: "paperSizes" } } });
-                                  } else {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                  }
+                              <PaperSizeSlider
+                                label="90kg 片面モノクロ (A3)"
+                                value={parseInt(selectedOptions.paperSizes.a3_90kg_single_mono, 10)}
+                                onChange={(val) => {
+                                  setSelectedOptions((prev) => ({
+                                    ...prev,
+                                    paperSizes: { ...prev.paperSizes, a3_90kg_single_mono: String(val) },
+                                  }));
                                 }}
-                                onBlur={() => {
-                                  const paperCounts = Object.values(selectedOptions.paperSizes).map(val => parseFloat(val.replace(/,/g, '')) || 0);
-                                  const totalPaperSum = paperCounts.reduce((sum, count) => sum + count, 0);
-                                  if (totalPaperSum > 8) {
-                                    setModalMessage("用紙の合計数量は8を超えることはできません。");
-                                    setShowModal(true);
-                                    handleChange({ target: { name: "a3_90kg_single_mono", value: "0", dataset: { category: "paperSizes" } } });
-                                  }
-                                }}
-                                thousandSeparator=","
-                                decimalScale={0}
-                                allowNegative={false}
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                                placeholder="数量を入力（0も可）"
                               />
                             </div>
                           </div>
                         </div>
-                        {paperError && (
-                          <p className="text-red-500 text-sm mt-2">
-                            エラー: 用紙の合計数量は8を超えることはできません。数量を調整してください。
-                          </p>
-                        )}
                       </div>
                     </div>
 
-                    <div className="relative">
+                    <div className="flex flex-col items-center">
+                      {!isFormComplete() && (
+                        <p className="mb-0 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
+                          すべての項目を入力してください
+                        </p>
+                      )}
                       <button
                         type="submit"
                         className={`w-full px-6 py-3 rounded font-bold transition-colors ${isFormComplete()
@@ -1929,23 +1806,20 @@ export default function Quote() {
                       >
                         見積を取得
                       </button>
-                      {!isFormComplete() && (
-                        <div className="absolute left-1/2 transform -translate-x-1/2 -top-10 bg-white text-gray-800 text-lg font-semibold px-4 py-2 rounded-full shadow-lg">
-                          すべての項目を入力してください
-                        </div>
-                      )}
                     </div>
                   </form>
                 )}
                 {selectedUnit === "secretariat" && (
                   <div className="text-center">
                     <p className="text-lg text-gray-600">
-                      事務局代行の見積もりは個別対応となります。お問い合わせください。
+                      弊社が専用サイトをご用意しております。<br />下記専用サイトの見積ページをご利用ください。
                     </p>
                     <Link
-                      href="/contact"
+                      href="https://campaigncandx.jp/estimate/"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="mt-4 inline-block px-6 py-3 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                    >お問い合わせ
+                    >DMPSキャンペーンDX・見積ページ
                     </Link>
                   </div>
                 )}

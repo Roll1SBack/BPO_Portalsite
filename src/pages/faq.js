@@ -15,11 +15,29 @@ export default function FAQ() {
     },
     {
       question: "見積もりはどのように取得できますか？",
-      answer: "無料見積は当社の見積シミュレーション（/quote）で簡単に取得できます。また、詳細な見積は「無料見積」ページまたはお問い合わせページからリクエスト可能です。",
+      answer: <p>無料見積は当社の
+        {" "}
+        < Link href="/quote" className="text-blue-600 underline font-bold" >
+          見積シミュレーション
+        </Link >
+        {" "}
+        で簡単に取得できます。また、詳細な見積は
+        {" "}
+        < Link href="/contact" className="text-blue-600 underline font-bold" >
+          お問い合わせ
+        </Link >
+        {" "}
+        ページからリクエスト可能です。</p>,
     },
     {
       question: "サービス料金はどのくらいかかりますか？",
-      answer: "料金はサービス内容と作業量によって異なります。無料見積ページで概算をシミュレーションできます。詳細は「お問い合わせ」よりご相談ください。",
+      answer: <p>料金はサービス内容と作業量によって異なります。無料見積ページで概算をシミュレーションできます。詳細は
+        {" "}
+        < Link href="/contact" className="text-blue-600 underline font-bold" >
+          お問い合わせ
+        </Link >
+        {" "}
+        よりご相談ください。</p>,
     },
     {
       question: "対応時間はいつですか？",
@@ -27,7 +45,13 @@ export default function FAQ() {
     },
     {
       question: "プライバシーポリシーはどうなっていますか？",
-      answer: "当社のプライバシーポリシーは「プライバシーポリシー」ページ（/privacy）でご確認いただけます。お問い合わせ内容は厳格に管理されます。",
+      answer: <p>当社のプライバシーポリシーは
+        {" "}
+        < Link href="/privacy" className="text-blue-600 underline font-bold" >
+          プライバシーポリシー
+        </Link >
+        {" "}
+        ページでご確認いただけます。お問い合わせ内容は厳格に管理されます。</p>,
     },
   ];
 
@@ -57,7 +81,12 @@ export default function FAQ() {
         <section className="py-12 px-8 max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-6 text-center">よくある質問（FAQ）</h1>
           <p className="text-lg mb-8 text-center">
-            BPOサービスに関するご質問をこちらで解決します。詳細は「お問い合わせ」よりご連絡ください。
+            BPOサービスに関するご質問をこちらで解決します。詳細は
+            {" "}
+            < Link href="/privacy" className="text-blue-600 underline font-bold" >
+              お問い合わせ
+            </Link >
+            {" "}よりご連絡ください。
           </p>
           {/* Search Input */}
           <div className="mb-6">
