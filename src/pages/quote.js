@@ -1662,7 +1662,7 @@ export default function Quote() {
                             totalPaper <= 8 ? (
                               <span className="text-green-500 text-sm font-semibold">今選択された用紙枚数は{totalPaper}枚です</span>
                             ) : (
-                              <span className="text-red-500 text-sm font-semibold">合計が8枚を超えています! (対応しかねません)</span>
+                              <span className="text-red-500 text-sm font-semibold">合計が8枚を超えています! (対応致しかねます)</span>
                             );
 
                           return (
