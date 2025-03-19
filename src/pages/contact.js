@@ -94,16 +94,16 @@ export default function Contact() {
         <meta property="og:image" content="/office.png" />
         <meta property="og:url" content="https://yourwebsite.com/contact" />
       </Head>
-      <main className="flex-grow"> {/* Ensure content fills viewport for footer */}
-        <section className="py-12 px-8 max-w-7xl mx-auto">
+      <main className="flex-grow flex items-center justify-center"> {/* Ensure content fills viewport for footer */}
+        <section className="py-12 px-5 max-w-7xl mx-auto">
           <h1 className="text-4xl font-bold mb-6 text-center">お問い合わせ</h1>
           {submitted ? (
-            <div className="bg-white shadow rounded p-6 text-center">
+            <div className="w-[60vw] bg-white shadow rounded p-6 text-center">
               <h2 className="text-2xl font-bold mb-4 text-green-600">
                 ありがとうございます！
               </h2>
               <p className="text-lg mb-4">
-                お問い合わせを送信しました。内容を慎重に取り扱い、できるだけ早くご連絡いたします。お待ちください。
+                お問い合わせを送信しました。<br/>内容を慎重に取り扱い、できるだけ早くご連絡いたします。お待ちください。
               </p>
               <p className="text-lg mb-4">
                 緊急の場合は、直接お電話ください：
@@ -122,9 +122,9 @@ export default function Contact() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <div>
-                <h2 className="text-2xl font-bold mb-4 text-center">お問い合わせフォーム</h2>
+            <div className="w-full gap-8">
+              <div className="w-[50vw] mx-auto">
+                <h2 className="text-2xl font-bold mb-4 text-center underline">お問い合わせフォーム</h2>
                 <form onSubmit={handleSubmit} className="bg-white shadow rounded p-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
@@ -301,24 +301,26 @@ export default function Contact() {
                     お問い合わせを送信
                   </button>
                 </form>
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold mb-4 text-center">お電話でのお問い合わせ</h2>
-                <div className="bg-white shadow rounded p-6">
-                  <p className="text-lg mb-4 text-center">
-                    お急ぎの場合は、以下の電話番号に直接お問い合わせください。
-                  </p>
-                  <p className="text-xl font-bold text-center text-blue-600 mb-4">
-                    0123-456-789
-                  </p>
-                  <p className="text-lg mb-4 text-center">
-                    営業時間：月曜〜金曜 9:00〜18:00
-                  </p>
-                  <p className="text-lg mb-4 text-center">
-                    担当者が迅速に対応いたします。
-                  </p>
+
+                <div>
+                  <h2 className="text-2xl font-bold mt-8 mb-4 text-center underline">お電話でのお問い合わせ</h2>
+                  <div className="bg-white shadow rounded p-6">
+                    <p className="text-lg mb-4 text-center">
+                      お急ぎの場合は、以下の電話番号に直接お問い合わせください。
+                    </p>
+                    <p className="text-xl font-bold text-center text-blue-600 mb-4">
+                      0123-456-789
+                    </p>
+                    <p className="text-lg mb-4 text-center">
+                      営業時間：月曜〜金曜 9:00〜18:00
+                    </p>
+                    <p className="text-lg mb-4 text-center">
+                      担当者が迅速に対応いたします。
+                    </p>
+                  </div>
                 </div>
               </div>
+
             </div>
           )}
         </section>

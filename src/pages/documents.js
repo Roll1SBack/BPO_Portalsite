@@ -71,12 +71,12 @@ export default function Documents() {
         <meta property="og:image" content="/office.png" />
         <meta property="og:url" content="https://yourwebsite.com/documents" />
       </Head>
-      <main className="flex-grow"> {/* Ensure content fills viewport for footer via Layout.js */}
+      <main className="flex-grow w-[60vw] flex items-center mx-auto"> {/* Ensure content fills viewport for footer via Layout.js */}
         <section className="py-12 px-8 max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-6 text-center">資料請求</h1>
           {isSubmitted ? (
             <div className="text-center">
-              <p className="text-lg text-green-600 mb-4">
+              <p className="text-lg font-semibold text-green-600 mb-4">
                 資料が正常にダウンロードされました。ご確認ください。
               </p>
               <Link
@@ -89,9 +89,9 @@ export default function Documents() {
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               {error && <p className="text-red-600 text-center">{error}</p>}
-              <div>
-                <label htmlFor="name" className="block text-lg font-medium text-gray-700 mb-2">
-                  名前（必須）
+              <div className="w-[50vw] mx-auto">
+                <label htmlFor="name" className="block text-lg font-semibold text-gray-700 mb-2">
+                  名前（<span className="text-red-500">※必須</span>）
                 </label>
                 <input
                   type="text"
@@ -104,8 +104,8 @@ export default function Documents() {
                 />
               </div>
               <div>
-                <label htmlFor="email" className="block text-lg font-medium text-gray-700 mb-2">
-                  メールアドレス（必須）
+                <label htmlFor="email" className="block text-lg font-semibold text-gray-700 mb-2">
+                  メールアドレス（<span className="text-red-500">※必須</span>）
                 </label>
                 <input
                   type="email"
@@ -118,8 +118,8 @@ export default function Documents() {
                 />
               </div>
               <div>
-                <label htmlFor="company" className="block text-lg font-medium text-gray-700 mb-2">
-                  会社名（必須）
+                <label htmlFor="company" className="block text-lg font-semibold text-gray-700 mb-2">
+                  会社名（<span className="text-red-500">※必須</span>）
                 </label>
                 <input
                   type="text"
@@ -132,8 +132,8 @@ export default function Documents() {
                 />
               </div>
               <div>
-                <label htmlFor="message" className="block text-lg font-medium text-gray-700 mb-2">
-                  メッセージ（任意）
+                <label htmlFor="message" className="block text-lg font-semibold text-gray-700 mb-2">
+                  メッセージ（<span className="text-green-500">任意</span>）
                 </label>
                 <textarea
                   id="message"

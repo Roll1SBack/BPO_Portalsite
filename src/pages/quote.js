@@ -5,6 +5,8 @@ import { useState, useRef, useEffect } from "react";
 import PaperSizeSlider from "@/components/PaperSizeSlider";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaCheckSquare, FaSquare } from "react-icons/fa"; // For elegant checkmarks
+import { MdEmojiObjects, MdEmojiEmotions } from "react-icons/md"; // For the lightbulb icon
+import { PiSmileySad, PiSmile } from "react-icons/pi"; // For the sad face icon
 import { NumericFormat } from "react-number-format"; // For formatting numbers
 import Layout from "../components/Layout";
 
@@ -519,15 +521,15 @@ export default function Quote() {
         <meta property="og:image" content="/office.png" />
         <meta property="og:url" content="https://yourwebsite.com/quote" />
       </Head>
-      <main className="flex-grow">
+      <main className="flex-grow w-[60vw] mx-auto">
         <section className="py-12 px-8 max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold text-center text-gray-900">無料見積</h1>
           <p className="text-xl mb-4 font-bold text-center text-red-500">たった10秒でお見積もり結果がわかります！</p>
           <p className="text-lg mb-8 text-center text-gray-600">
-            選択式のシミュレーションで、<br />貴社のニーズに合わせたBPOソリューションの概算見積を取得してください。
+            滅茶苦茶使いやすいのシミュレーションで、<br />貴社のニーズに合わせたBPOソリューションの概算見積を取得してください。
           </p>
           {/* Fixed Selection Area */}
-          <div className="sticky top-20 bg-white shadow-md rounded-lg p-4 z-10 mb-6">
+          <div className="sticky top-20 bg-white shadow-md rounded-lg p-4 mb-6">
             <label className="block text-lg font-semibold text-gray-700 mb-2 text-center">事業ユニットを選択</label>
             <div className="flex space-x-4">
               {Object.keys(quoteData).map((unit) => (
@@ -1660,9 +1662,15 @@ export default function Quote() {
                             );
                           const message =
                             totalPaper <= 8 ? (
+                              <>
                               <span className="text-green-500 text-sm font-semibold">今選択された用紙枚数は{totalPaper}枚です</span>
+                              <MdEmojiEmotions className="text-xl text-yellow-500" />
+                              </>
                             ) : (
-                              <span className="text-red-500 text-sm font-semibold">合計が8枚を超えています! (対応致しかねます)</span>
+                              <>
+                              <span className="text-red-500 text-sm font-semibold">合計が8枚を超えています! (恐縮ですが対応致しかねます)</span>
+                              <PiSmileySad className="text-xl text-gray-500" />
+                              </>
                             );
 
                           return (
@@ -1811,7 +1819,7 @@ export default function Quote() {
                 )}
                 {selectedUnit === "secretariat" && (
                   <div className="text-center">
-                    <p className="text-lg text-gray-600">
+                    <p className="text-lg text-gray-600 text-green-500 font-semibold">
                       弊社が専用サイトをご用意しております。<br />下記専用サイトの見積ページをご利用ください。
                     </p>
                     <Link

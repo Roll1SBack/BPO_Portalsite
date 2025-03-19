@@ -241,7 +241,7 @@ export default function Layout({ children, extraContact = null }) {
                         className="relative"
                       >
                         <Link
-                          href="/"
+                          href="/about"
                           className={`hover:text-diamondGreen-600 block text-lg font-semibold whitespace-nowrap px-4 py-3 ${isActive("/") ? "text-diamondGreen-600" : "text-gray-900"
                             }`}
                         >
