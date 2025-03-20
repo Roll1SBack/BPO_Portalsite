@@ -109,6 +109,14 @@ export default function Layout({ children, extraContact = null }) {
     "data-processing-speedup": "データ処理の高速化",
   };
 
+  const articles = {
+    article1: { title: "BPOの最新トレンド2025" },
+    article2: { title: "EC業務の効率化Tips" },
+    article3: { title: "データ処理のベストプラクティス" },
+    article4: { title: "在庫管理の課題と解決策" },
+    article5: { title: "事務作業の自動化事例" },
+  };
+
   // Mobile menu styles (maintaining original styling)
   const menuStyles = {
     bmBurgerButton: {
