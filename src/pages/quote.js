@@ -529,7 +529,7 @@ export default function Quote() {
             滅茶苦茶使いやすいのシミュレーションで、<br />貴社のニーズに合わせたBPOソリューションの概算見積を取得してください。
           </p>
           {/* Fixed Selection Area */}
-          <div className="sticky top-20 bg-white shadow-md rounded-lg p-4 mb-6">
+          <div className="sticky top-20 bg-white shadow-md rounded-lg p-4 mb-6 z-10">
             <label className="block text-lg font-semibold text-gray-700 mb-2 text-center">事業ユニットを選択</label>
             <div className="flex space-x-4">
               {Object.keys(quoteData).map((unit) => (

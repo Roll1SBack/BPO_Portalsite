@@ -2,6 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import BPOChatbot from "@/components/Chatbot";
 
 // Debug: Homepage content only (no header/footer, as Layout.js handles them).
 export default function Home() {
@@ -99,6 +100,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+      <BPOChatbot />
     </>
   );
 }

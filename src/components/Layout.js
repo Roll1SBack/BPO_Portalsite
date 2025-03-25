@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion
 import { slide as Menu } from "react-burger-menu"; // Import React Burger Menu for mobile
 import { FaCalculator, FaEnvelope, FaMailBulk, FaPhone } from "react-icons/fa"; // Import SVG icons from react-icons
+import BPOChatbot from "./Chatbot";
 
 // Debug: Site-wide Layout in light mode only, maintaining original layout and color style, with restored mobile menu in top-right, dropdowns for services and cases, BPO title, linked logo, and menu options in both header and footer.
 export default function Layout({ children, extraContact = null }) {
@@ -219,23 +220,31 @@ export default function Layout({ children, extraContact = null }) {
           <div className="flex items-center justify-between">
             {/* Logo and Subtitle */}
             <div className="flex items-center space-x-4">
-              <Link href="/">
+              <Link href="https://www.dmps.co.jp">
                 <div className="w-45 items-center ml-1">
                   <Image
                     src="/logo_full.jpeg"
-                    alt="ダイオーミウラBPOビジネスセンターの公式ロゴ"
+                    alt="ダイオーミウラの公式ロゴ"
                     width={200 * 0.94}
                     height={80 * 0.94}
                     className="object-contain"
                   />
-                </div>
-                <div className="flex flex-col">
-                  <h1 className="text-lg bg-orange-500 font-black text-black-700">BPOビジネスセンター</h1>
-                  {/* Subtitle */}
-                  {/* <p className="text-sm text-gray-600">DMPSよりの極限の効率と価値創造、ビジネスに革新を。</p> */}
-                </div>
+              </div>
               </Link>
+              <Link href="/">
+                <div className="w-16 justify-left  ml-1">
+                  <Image
+                    src="/logo_BPO.svg"
+                    alt="DMPS/BPOの公式ロゴ"
+                    width={200 * 0.48}
+                    height={100 * 0.64}
+                    className="object-contain"
+                  />
+              </div>
+            </Link>
+
             </div>
+
 
             {/* Navigation */}
             <nav role="navigation" className="hidden md:block">
@@ -528,7 +537,7 @@ export default function Layout({ children, extraContact = null }) {
             </div>
           </div>
         </div>
-        <div className="w-full bg-red-600 text-white relative py-1 flex justify-center items-center">
+        <div className="w-full bg-red-600 text-white relative py-1 flex justify-left items-center">
           <span className="text-yellow-300 text-lg font-bold">
             サイトオープンまで：{timeLeft}
           </span>
@@ -666,6 +675,9 @@ export default function Layout({ children, extraContact = null }) {
           </div>
         </div>
       </footer>
+      <BPOChatbot />
     </div>
+    
+     
   );
 }

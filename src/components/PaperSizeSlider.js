@@ -19,7 +19,7 @@ const PaperSizeSlider = ({ label, value, onChange }) => {
     }, [value]);
 
     return (
-        <div>
+        <div className="relative z-1">
             <label className="block text-sm font-medium text-gray-600">{label}</label>
             <Slider
                 min={0}
