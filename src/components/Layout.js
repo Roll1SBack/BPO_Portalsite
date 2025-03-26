@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { motion, AnimatePresence } from "framer-motion"; // Import Framer Motion
 import { slide as Menu } from "react-burger-menu"; // Import React Burger Menu for mobile
 import { FaCalculator, FaEnvelope, FaMailBulk, FaPhone } from "react-icons/fa"; // Import SVG icons from react-icons
+import { Warehouse, Package, FileText, Printer, Box, Users, DollarSign, Rocket, Settings, Shield } from "lucide-react";
 import BPOChatbot from "./Chatbot";
 
 // Debug: Site-wide Layout in light mode only, maintaining original layout and color style, with restored mobile menu in top-right, dropdowns for services and cases, BPO title, linked logo, and menu options in both header and footer.
@@ -215,13 +216,13 @@ export default function Layout({ children, extraContact = null }) {
       `}</style>
 
       {/* Header */}
-      <header className="bg-white shadow-sm sticky top-0 z-50">
+      <header className="bg-white shadow-sm sticky top-0 z-[100]">
         <div className="max-w-8xl mx-auto px-6">
           <div className="flex items-center justify-between">
             {/* Logo and Subtitle */}
             <div className="flex items-center space-x-4">
               <Link href="https://www.dmps.co.jp">
-                <div className="w-45 items-center ml-1">
+                <div className="w-45 items-center ml-1 bg-white p-2 rounded-lg">
                   <Image
                     src="/logo_full.jpeg"
                     alt="ダイオーミウラの公式ロゴ"
@@ -231,8 +232,10 @@ export default function Layout({ children, extraContact = null }) {
                   />
               </div>
               </Link>
+
               <Link href="/">
-                <div className="w-16 justify-left  ml-1">
+              {/*
+                <div className="w-20 justify-left ml-0 bg-[#FAF00F] p-1 rounded-md">
                   <Image
                     src="/logo_BPO.svg"
                     alt="DMPS/BPOの公式ロゴ"
@@ -241,6 +244,14 @@ export default function Layout({ children, extraContact = null }) {
                     className="object-contain"
                   />
               </div>
+              */}
+              <div className="w-16 flex justify-between items-center ml-2">
+                <Shield className="w-6 h-6 text-[#FF0000]" />
+                <Users className="w-6 h-6 text-[#00FF00]" />
+                <Shield className="w-6 h-6 text-[#0000FF]" />
+              </div>
+              <p className=" flex justify-between items-center font-bold text-[#1A2FA0] text-sm shadow-sm">DMPS|BPO</p>
+
             </Link>
 
             </div>
