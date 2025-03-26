@@ -1,8 +1,9 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { Warehouse, Package, FileText, Printer, Box, Users, DollarSign, Rocket, Settings, Shield } from "lucide-react";
+import { Warehouse, Package, FileText, Printer, Box, Users, DollarSign, Rocket, Settings, Shield, CheckCircle, Clock, FileCheck, Truck } from "lucide-react";
 import BPOChatbot from "@/components/Chatbot";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -74,6 +75,19 @@ export default function Home() {
     },
   ];
 
+  // Animation variants for Strengths section
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.2,
+        duration: 0.5,
+      },
+    }),
+  };
+
   return (
     <>
       <Head>
@@ -108,10 +122,10 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Service Card 1: EC Fulfillment */}
             <Link href="/services/ec-fulfillment">
-              <div className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-transform transform hover:scale-105">
-                <Warehouse className="w-12 h-12 text-[#1A2FA0] mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-gray-800 text-center mb-2">ECフルフィルメント</h4>
-                <p className="text-gray-600 text-center">
+              <div className="p-8 bg-gradient-to-br from-blue-50 to-white border border-gray-200 rounded-xl hover:border-[#1A2FA0] hover:border-2 transition-all transform hover:scale-110">
+                <Warehouse className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700" />
+                <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">ECフルフィルメント</h4>
+                <p className="text-gray-600 text-lg text-center">
                   オンラインストアの受注から配送まで、効率的なサービスを提供します。
                 </p>
               </div>
@@ -119,10 +133,10 @@ export default function Home() {
 
             {/* Service Card 2: Inventory Management */}
             <Link href="/services/inventory">
-              <div className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-transform transform hover:scale-105">
-                <Package className="w-12 h-12 text-[#1A2FA0] mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-gray-800 text-center mb-2">在庫管理・受発注業務</h4>
-                <p className="text-gray-600 text-center">
+              <div className="p-8 bg-gradient-to-br from-blue-50 to-white border border-gray-200 rounded-xl hover:border-[#1A2FA0] hover:border-2 transition-all transform hover:scale-110">
+                <Package className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700" />
+                <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">在庫管理・受発注業務</h4>
+                <p className="text-gray-600 text-lg text-center">
                   在庫の最適化とスムーズな受発注管理で、業務効率を向上させます。
                 </p>
               </div>
@@ -130,10 +144,10 @@ export default function Home() {
 
             {/* Service Card 3: Data Processing */}
             <Link href="/services/data-processing">
-              <div className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-transform transform hover:scale-105">
-                <FileText className="w-12 h-12 text-[#1A2FA0] mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-gray-800 text-center mb-2">データ処理</h4>
-                <p className="text-gray-600 text-center">
+              <div className="p-8 bg-gradient-to-br from-blue-50 to-white border border-gray-200 rounded-xl hover:border-[#1A2FA0] hover:border-2 transition-all transform hover:scale-110">
+                <FileText className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700" />
+                <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">データ処理</h4>
+                <p className="text-gray-600 text-lg text-center">
                   大量のデータを迅速かつ正確に処理し、ビジネスに活用します。
                 </p>
               </div>
@@ -141,10 +155,10 @@ export default function Home() {
 
             {/* Service Card 4: Overprint */}
             <Link href="/services/data-processing">
-              <div className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-transform transform hover:scale-105">
-                <Printer className="w-12 h-12 text-[#1A2FA0] mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-gray-800 text-center mb-2">オーバープリント</h4>
-                <p className="text-gray-600 text-center">
+              <div className="p-8 bg-gradient-to-br from-blue-50 to-white border border-gray-200 rounded-xl hover:border-[#1A2FA0] hover:border-2 transition-all transform hover:scale-110">
+                <Printer className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700" />
+                <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">オーバープリント</h4>
+                <p className="text-gray-600 text-lg text-center">
                   多様な資材に対応した高品質なオーバープリントサービスを提供します。
                 </p>
               </div>
@@ -152,10 +166,10 @@ export default function Home() {
 
             {/* Service Card 5: Assembly/Set Operations */}
             <Link href="/services/assembly">
-              <div className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-transform transform hover:scale-105">
-                <Box className="w-12 h-12 text-[#1A2FA0] mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-gray-800 text-center mb-2">アセンブリ・セット作業</h4>
-                <p className="text-gray-600 text-center">
+              <div className="p-8 bg-gradient-to-br from-blue-50 to-white border border-gray-200 rounded-xl hover:border-[#1A2FA0] hover:border-2 transition-all transform hover:scale-110">
+                <Box className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700"A />
+                <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">アセンブリ・セット作業</h4>
+                <p className="text-gray-600 text-lg text-center">
                   商品のセット組みや梱包作業を効率的に代行します。
                 </p>
               </div>
@@ -163,14 +177,77 @@ export default function Home() {
 
             {/* Service Card 6: Agency Services */}
             <Link href="/services/secretariat">
-              <div className="p-6 bg-white shadow-md rounded-lg hover:shadow-lg transition-transform transform hover:scale-105">
-                <Users className="w-12 h-12 text-[#1A2FA0] mx-auto mb-4" />
-                <h4 className="text-xl font-semibold text-gray-800 text-center mb-2">事務局代行</h4>
-                <p className="text-gray-600 text-center">
+              <div className="p-8 bg-gradient-to-br from-blue-50 to-white border border-gray-200 rounded-xl hover:border-[#1A2FA0] hover:border-2 transition-all transform hover:scale-110">
+                <Users className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700" />
+                <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">事務局代行</h4>
+                <p className="text-gray-600 text-lg text-center">
                   事務作業やカスタマーサポート業務をアウトソーシングできます。
                 </p>
               </div>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Our Strengths Section */}
+      <section className="py-12 bg-gradient-to-b from-blue-100 to-blue-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <h3 className="text-3xl font-extrabold text-gray-800 text-center mb-10">私たちの強み！</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Strength 1: Proven Track Record */}
+            <motion.div
+              className="p-6 bg-white rounded-lg shadow-lg text-center border-b-4 border-[#1A2FA0]"
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={0}
+            >
+              <CheckCircle className="w-14 h-14 text-blue-600 mx-auto mb-4" />
+              <h4 className="text-2xl font-extrabold text-gray-800 mb-2 relative inline-block">
+                実績豊富！
+                <span className="absolute -bottom-1 left-0 w-full h-1 bg-[#1A2FA0] rounded"></span>
+              </h4>
+              <p className="text-gray-600 text-lg">
+                多様な業界で圧倒的な実績！信頼のサービスで成功をサポートします！
+              </p>
+            </motion.div>
+            {/* Strength 2: Quick Response */}
+            <motion.div
+              className="p-6 bg-white rounded-lg shadow-lg text-center border-b-4 border-[#1A2FA0]"
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={1}
+            >
+              <Clock className="w-14 h-14 text-blue-600 mx-auto mb-4" />
+              <h4 className="text-2xl font-extrabold text-gray-800 mb-2 relative inline-block">
+                迅速な対応！
+                <span className="absolute -bottom-1 left-0 w-full h-1 bg-[#1A2FA0] rounded"></span>
+              </h4>
+              <p className="text-gray-600 text-lg">
+                スピーディーに課題解決！最短で成果を出す対応力！
+              </p>
+            </motion.div>
+            {/* Strength 3: High-Quality Standards */}
+            <motion.div
+              className="p-6 bg-white rounded-lg shadow-lg text-center border-b-4 border-[#1A2FA0]"
+              variants={cardVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={2}
+            >
+              <FileCheck className="w-14 h-14 text-blue-600 mx-auto mb-4" />
+              <h4 className="text-2xl font-extrabold text-gray-800 mb-2 relative inline-block">
+                高品質な基準！
+                <span className="absolute -bottom-1 left-0 w-full h-1 bg-[#1A2FA0] rounded"></span>
+              </h4>
+              <p className="text-gray-600 text-lg">
+                最高品質を保証！厳格な基準で安心のサービスを提供！
+              </p>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -239,13 +316,13 @@ export default function Home() {
           <div className="overflow-hidden">
             <div
               ref={partnersRef}
-              className="flex animate-scroll"
+              className="flex animate-scroll h-[200px]" // Set a fixed height for the container
               style={{ animation: "scroll 30s linear infinite" }}
             >
               {[...partners, ...partners].map((partner, index) => (
                 <div
                   key={`${partner.name}-${index}`}
-                  className="flex-shrink-0 w-40 mx-4 group"
+                  className="flex-shrink-0 w-40 mx-4 group h-full flex items-center" // Ensure the card takes the full height
                 >
                   <div className="flex flex-col items-center p-4 bg-gray-100 rounded-lg transition-transform transform group-hover:scale-110">
                     <div className="mb-2">{partner.icon}</div>
@@ -280,6 +357,68 @@ export default function Home() {
             width: max-content;
           }
         `}</style>
+      </section>
+
+      {/* Service Input Flow Section */}
+      <section className="py-12 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <h3 className="text-2xl font-bold text-gray-800 text-center mb-8">サービス導入の流れ</h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {/* Step 1: Inquiry */}
+            <div className="flex flex-col items-center text-center p-6 bg-white shadow-md rounded-lg">
+              <div className="flex items-center justify-center w-12 h-12 bg-[#1A2FA0] text-white rounded-full mb-4">
+                <span className="text-lg font-bold">1</span>
+              </div>
+              <Users className="w-12 h-12 text-[#1A2FA0] mb-4" />
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">お問い合わせ</h4>
+              <p className="text-gray-600">
+                まずはお問い合わせフォームまたはお電話でご連絡ください。
+              </p>
+            </div>
+            {/* Step 2: Consultation */}
+            <div className="flex flex-col items-center text-center p-6 bg-white shadow-md rounded-lg">
+              <div className="flex items-center justify-center w-12 h-12 bg-[#1A2FA0] text-white rounded-full mb-4">
+                <span className="text-lg font-bold">2</span>
+              </div>
+              <FileText className="w-12 h-12 text-[#1A2FA0] mb-4" />
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">ヒアリング・ご提案</h4>
+              <p className="text-gray-600">
+                専任スタッフが課題をヒアリングし、最適なプランをご提案します。
+              </p>
+            </div>
+            {/* Step 3: Implementation */}
+            <div className="flex flex-col items-center text-center p-6 bg-white shadow-md rounded-lg">
+              <div className="flex items-center justify-center w-12 h-12 bg-[#1A2FA0] text-white rounded-full mb-4">
+                <span className="text-lg font-bold">3</span>
+              </div>
+              <Settings className="w-12 h-12 text-[#1A2FA0] mb-4" />
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">導入・運用開始</h4>
+              <p className="text-gray-600">
+                サービスを導入し、スムーズな運用を開始します。
+              </p>
+            </div>
+            {/* Step 4: Follow-Up */}
+            <div className="flex flex-col items-center text-center p-6 bg-white shadow-md rounded-lg">
+              <div className="flex items-center justify-center w-12 h-12 bg-[#1A2FA0] text-white rounded-full mb-4">
+                W <span className="text-lg font-bold">4</span>
+              </div>
+              <Truck className="w-12 h-12 text-[#1A2FA0] mb-4" />
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">継続的なサポート</h4>
+              <p className="text-gray-600">
+                運用後も継続的なサポートで安心してご利用いただけます。
+              </p>
+            </div>
+          </div>
+          {/* Note for Detailed Information */}
+          <div className="mt-8 text-center">
+            <p className="text-gray-600">
+              各サービスの詳細な導入フローについては、サービスごとのランディングページをご覧ください。
+              <Link href="/services" className="text-[#1A2FA0] hover:underline ml-1">
+                サービス一覧へ
+              </Link>
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* Testimonials Section */}
@@ -328,7 +467,7 @@ export default function Home() {
           </Link>
         </div>
       </section>
-      
+
       {/* Chatbot */}
       <BPOChatbot />
     </>
