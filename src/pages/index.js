@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Warehouse, Package, FileText, Printer, Box, Users, DollarSign, Rocket, Settings, Shield, CheckCircle, Clock, FileCheck, Truck } from "lucide-react";
 import BPOChatbot from "@/components/Chatbot";
 import { motion } from "framer-motion";
+import { FaCalculator } from "react-icons/fa";
 
 export default function Home() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -126,7 +127,7 @@ export default function Home() {
                 <Warehouse className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700" />
                 <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">ECフルフィルメント</h4>
                 <p className="text-gray-600 text-lg text-center">
-                  オンラインストアの受注から配送まで、効率的なサービスを提供します。
+                  受注から配送まで、効率的なサービスを提供します。
                 </p>
               </div>
             </Link>
@@ -159,7 +160,7 @@ export default function Home() {
                 <Printer className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700" />
                 <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">オーバープリント</h4>
                 <p className="text-gray-600 text-lg text-center">
-                  多様な資材に対応した高品質なオーバープリントサービスを提供します。
+                  多様な資材に対応した高品質なサービスを提供します。
                 </p>
               </div>
             </Link>
@@ -167,7 +168,7 @@ export default function Home() {
             {/* Service Card 5: Assembly/Set Operations */}
             <Link href="/services/assembly">
               <div className="p-8 bg-gradient-to-br from-blue-50 to-white border border-gray-200 rounded-xl hover:border-[#1A2FA0] hover:border-2 transition-all transform hover:scale-110">
-                <Box className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700"A />
+                <Box className="w-14 h-14 text-[#1A2FA0] mx-auto mb-4 transition-colors hover:text-blue-700" A />
                 <h4 className="text-2xl font-bold text-gray-800 text-center mb-3">アセンブリ・セット作業</h4>
                 <p className="text-gray-600 text-lg text-center">
                   商品のセット組みや梱包作業を効率的に代行します。
@@ -400,7 +401,7 @@ export default function Home() {
             {/* Step 4: Follow-Up */}
             <div className="flex flex-col items-center text-center p-6 bg-white shadow-md rounded-lg">
               <div className="flex items-center justify-center w-12 h-12 bg-[#1A2FA0] text-white rounded-full mb-4">
-                W <span className="text-lg font-bold">4</span>
+                W <span className="text-lg font-bold">4</span>
               </div>
               <Truck className="w-12 h-12 text-[#1A2FA0] mb-4" />
               <h4 className="text-lg font-semibold text-gray-800 mb-2">継続的なサポート</h4>
@@ -453,16 +454,17 @@ export default function Home() {
 
       {/* CTA Section */}
       <section className="py-12 bg-gray-50 text-center border-t border-gray-200">
-        <div className="max-w-4xl mx-auto px-4">
-          <h3 className="text-2xl font-bold text-gray-800 mb-4">
+        <div className="max-w-4xl mx-auto px-4 flex justify-center items-center flex-col">
+          <h3 className="text-2xl font-bold text-green-800 mb-4">
             今すぐコストを試算してみませんか？
           </h3>
           <p className="text-lg text-gray-600 mb-6">
             無料見積シミュレーションで、あなたのビジネスに最適なBPOソリューションを見つけましょう。
           </p>
           <Link href="/quote">
-            <button className="bg-[#1A2FA0] text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors">
-              見積シミュレーションへ
+
+            <button className="bg-[#1A2FA0] text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center">
+              <FaCalculator className="mr-2" />無料見積もりへ
             </button>
           </Link>
         </div>
